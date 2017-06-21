@@ -52,7 +52,7 @@ public class FileManageDaoImplByFTP extends FileManageDaoTemplate {
         ftpClient.setControlEncoding("utf-8");  
         //设置文件类型（二进制）         
         ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);   
-//设置ftp上传模式为client向server传  
+        //设置ftp上传模式为client向server传  
         ftpClient.enterLocalPassiveMode();   
         return ftpClient ;  
     }  
@@ -104,7 +104,7 @@ public class FileManageDaoImplByFTP extends FileManageDaoTemplate {
         try {  
             ftpClient = getFtpClient(directory);  
             boolean flag = ftpClient.deleteFile(new String(fileName.getBytes("utf-8"),"iso-8859-1"));  
-if(!flag){  
+            if(!flag){  
                 throw new Exception("删除文件 "+fileName+" 失败。") ;  
             }  
         } catch (Exception e) {  
