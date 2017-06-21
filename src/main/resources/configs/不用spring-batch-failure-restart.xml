@@ -52,9 +52,9 @@
 		<property name="poolProperties">
 			<bean class="org.apache.tomcat.jdbc.pool.PoolProperties">
 				<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://localhost:3306/test" />
+				<property name="url" value="jdbc:mysql://localhost:3306/db_spring_mybatis" />
 				<property name="username" value="root" />
-				<property name="password" value="034039" />
+				<property name="password" value="root" />
 			</bean>
 		</property>
 	</bean>

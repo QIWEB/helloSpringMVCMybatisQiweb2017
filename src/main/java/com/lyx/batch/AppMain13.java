@@ -27,7 +27,7 @@ public class AppMain13 {
 
 		@SuppressWarnings("resource")
 		ApplicationContext context = new ClassPathXmlApplicationContext(
-				new String[] { "classpath:spring-batch-failure-restart.xml" });
+				new String[] { "classpath:/configs/spring-batch-failure-restart.xml" });
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 		Job job = (Job) context.getBean("addPeopleDescJob");
 		JobLauncher launcher = (JobLauncher) context.getBean("jobLauncher");
