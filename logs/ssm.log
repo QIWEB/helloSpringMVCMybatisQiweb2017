@@ -239,4 +239,19 @@ Caused by: java.io.FileNotFoundException: class path resource [spring-mybatis.xm
 [INFO] [2017-06-21 14:00:05][hello.MongoApp]hello.Person@1bbf683
   [INFO] [2017-06-21 14:01:12][hello.MongoApp]hello.Person@916eb0
   [INFO] [2017-06-21 14:01:27][hello.MongoApp]hello.Person@1bbf683
+  [INFO] [2017-06-21 16:14:00][hello.ReadJSON]------看看日志是不是记录成功了
+  [INFO] [2017-06-21 16:19:05][hello.ReadJSON]------看看日志是不是记录成功了
+  [INFO] [2017-06-21 16:19:05][hello.ReadJSON]json内容：姓名：zhangsan年龄：25
+  [INFO] [2017-06-21 16:33:37][hello.ReadJSON]------看看日志是不是记录成功了
+  [INFO] [2017-06-21 16:33:37][hello.ReadJSON]json内容：姓名：zhangsan年龄：25
+  [INFO] [2017-06-21 16:33:37][net.sf.json.JSONObject]Property 'mongoTemplate' of class hello.Person has no read method. SKIPPED
+  [INFO] [2017-06-21 16:33:37][hello.ReadJSON]json内容：姓名：王力年龄：69
+  [INFO] [2017-06-21 16:33:53][hello.ReadJSON]------看看日志是不是记录成功了
+  [INFO] [2017-06-21 16:33:53][hello.ReadJSON]json内容：姓名：zhangsan年龄：25
+  [INFO] [2017-06-21 16:33:53][net.sf.json.JSONObject]Property 'mongoTemplate' of class hello.Person has no read method. SKIPPED
+  [INFO] [2017-06-21 16:33:53][hello.ReadJSON]json内容：姓名：王力年龄：69
+  [INFO] [2017-06-21 16:39:14][hello.ReadJSON]------看看日志是不是记录成功了
+  [INFO] [2017-06-21 16:39:14][hello.ReadJSON]json内容：姓名：zhangsan年龄：25
+  [INFO] [2017-06-21 16:39:14][net.sf.json.JSONObject]Property 'mongoTemplate' of class hello.Person has no read method. SKIPPED
+  [INFO] [2017-06-21 16:39:14][hello.ReadJSON]java对象转换成json内容：姓名：王力年龄：69
   
