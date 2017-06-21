@@ -32,5 +32,6 @@ public class TestMyBatis {
        System.out.println(user.getUserName());  
        logger.info("值："+user.getUserName());  
        logger.info(JSON.toJSONString(user));  
+       System.out.println("什么情况啊");
    }  
 }  
