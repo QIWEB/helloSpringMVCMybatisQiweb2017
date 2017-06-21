@@ -179,7 +179,13 @@
                 <groupId>com.jcraft</groupId>  
                 <artifactId>jsch</artifactId>  
                 <version>0.1.51</version>  
-            </dependency>  
+            </dependency>
+            <!-- 集成 mongodb --> 
+            <dependency>
+			    <groupId>org.springframework.data</groupId>
+			    <artifactId>spring-data-mongodb</artifactId>
+			    <version>1.2.1.RELEASE</version>
+			</dependency>
             
   </dependencies>
   <build>

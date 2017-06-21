@@ -236,3 +236,7 @@ Caused by: java.io.FileNotFoundException: class path resource [spring-mybatis.xm
 	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:158)
 	at org.springframework.beans.factory.xml.XmlBeanDefinitionReader.loadBeanDefinitions(XmlBeanDefinitionReader.java:329)
 	... 37 more
+[INFO] [2017-06-21 14:00:05][hello.MongoApp]hello.Person@1bbf683
+  [INFO] [2017-06-21 14:01:12][hello.MongoApp]hello.Person@916eb0
+  [INFO] [2017-06-21 14:01:27][hello.MongoApp]hello.Person@1bbf683
+  
