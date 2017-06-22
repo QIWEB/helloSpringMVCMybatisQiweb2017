@@ -12,6 +12,9 @@
     <br/>  
     password:<input type="text" name="password">  
     <br/>  
+    userId:<input type="text" name="userid" value=2>  
+    <br/>  
+    
     <input type="submit" value="登录">  
 </form>  
 </body>  

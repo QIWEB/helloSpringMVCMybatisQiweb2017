@@ -20,10 +20,10 @@ public class Login {
    @Resource  
    private IUserService userService ;  
    @RequestMapping("/login")  
-    public String login(String username,String password,Model model){  
+    public String login(String username,String password,int userid,Model model){  
         if (username.equals(password))   
         {  
-            User user = userService.getUserById(1);  
+            User user = userService.getUserById(userid);  
             System.out.println(user.getUserName());  
             logger.info("Öµlogin£º"+user.getUserName());  
             logger.info(JSON.toJSONString(user));  

@@ -130,6 +130,7 @@ public class MongoDBUtil {
 				db = mongo.getDB(dbName);
 				if (username != null && !"".equals(username)) {
 					db.addUser(username, password.toCharArray());
+					
 					if (collectionName != null && !"".equals(collectionName)) {
 						collection = db.getCollection(collectionName);
 					}

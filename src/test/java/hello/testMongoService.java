@@ -1,8 +1,11 @@
 package hello;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.mongodb.BasicDBList;
@@ -14,6 +17,19 @@ import com.qiweb.mongodb.test.MongoDBServiceImpl;
 public class testMongoService {
 	//使用mongodb.cfg.properties中配置的数据库与集合，如未指定，使用MongoDBUtil中默认的数据库与集合
 	MongoDBService mongoDBService1 = new MongoDBServiceImpl();
+	
+	@Test
+	public void testInsertJson(){
+		BasicDBList dblist=new BasicDBList();
+		dblist.add("cat");
+		dblist.add("language");
+		dblist.add("pop");
+		DBObject obj=new BasicDBObject("uname","qiweb").append("age",15)
+				.append("language", new BasicDBObject("pro","广东").append("web", "xml"))
+				.append("uu", dblist);
+		mongoDBService1.insert(obj);
+		mongoDBService1.printListDBObj(mongoDBService1.findAll());
+	}
 	
 	//测试插入数据
 	@Test
@@ -118,4 +134,13 @@ public class testMongoService {
 		//mongoDBService1.delete(new BasicDBObject());
 		mongoDBService1.printListDBObj(mongoDBService1.findAll());
 	}
+	@After
+	public void after(){
+		System.out.println("执行后==:");
+	}
+	@Before
+	public void before(){
+		System.out.println("执行前==:"+new Date());
+	}
+
 }
