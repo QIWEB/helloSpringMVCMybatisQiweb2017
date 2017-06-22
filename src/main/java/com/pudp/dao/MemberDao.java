@@ -16,7 +16,7 @@ import com.pudp.model.Member;
  *
  */
 @Repository
-public class MemberDao extends MongoGenDao<Member>{
+public class MemberDao extends MongoGenDao<Member> {
 
     /**
      * 实现钩子方法,返回反射的类型
@@ -26,7 +26,7 @@ public class MemberDao extends MongoGenDao<Member>{
      */
     @Override
     protected Class<Member> getEntityClass() {
-        return Member.class;
-    }
+    	return Member.class;
+   }
 }
 

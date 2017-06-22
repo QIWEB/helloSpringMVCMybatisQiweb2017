@@ -12,12 +12,28 @@ public class AsyncPeopleAddDescItemProcessor implements
         ItemProcessor<People, Future<PeopleDESC>> {
 
     /**
-     * SyncTaskExecutor»áÔÚµ±Ç°Ïß³ÌÖ´ĞĞÍê¿Í»§Ìá½»¸øËüµÄÈÎÎñ£¬¼´ËüÊÇÒÔÍ¬²½·½Ê½Íê³ÉÈÎÎñµÄÖ´ĞĞµÄ¡£
+     * SyncTaskExecutorä¼šåœ¨å½“å‰çº¿ç¨‹æ‰§è¡Œå®Œå®¢æˆ·æäº¤ç»™å®ƒçš„ä»»åŠ¡ï¼Œå³å®ƒæ˜¯ä»¥åŒæ­¥æ–¹å¼å®Œæˆä»»åŠ¡çš„æ‰§è¡Œçš„ã€‚
      *
      */
     private TaskExecutor taskExecutor = new SyncTaskExecutor();
 
-    public Future<PeopleDESC> process(final People item) throws Exception {
+  
+
+    public TaskExecutor getTaskExecutor() {
+        return this.taskExecutor;
+    }
+
+    public void setTaskExecutor(TaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
+
+//	@Override
+//	public Future<PeopleDESC> process(People item) throws Exception {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+	@Override
+	public Future<PeopleDESC> process(final People item) throws Exception {
         FutureTask<PeopleDESC> task = new FutureTask<PeopleDESC>(
                 new Callable<PeopleDESC>() {
                     public PeopleDESC call() throws Exception {
@@ -30,14 +46,6 @@ public class AsyncPeopleAddDescItemProcessor implements
                 });
         this.taskExecutor.execute(task);
         return task;
-    }
-
-    public TaskExecutor getTaskExecutor() {
-        return this.taskExecutor;
-    }
-
-    public void setTaskExecutor(TaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
     }
 
 }

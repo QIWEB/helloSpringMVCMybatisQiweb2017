@@ -13,43 +13,43 @@ import com.qiweb.mongodb.test.MongoDBService;
 import com.qiweb.mongodb.test.MongoDBServiceImpl;  
   
 /** 
- * »ùÓÚ×¢½âµÄ¶¨Ê±Æ÷ 
+ * åŸºäºæ³¨è§£çš„å®šæ—¶å™¨ 
  * @author hj 
  */  
 @Component  
 public class MyTaskAnnotation {  
       
-	//Ê¹ÓÃmongodb.cfg.propertiesÖĞÅäÖÃµÄÊı¾İ¿âÓë¼¯ºÏ£¬ÈçÎ´Ö¸¶¨£¬Ê¹ÓÃMongoDBUtilÖĞÄ¬ÈÏµÄÊı¾İ¿âÓë¼¯ºÏ
+	//ä½¿ç”¨mongodb.cfg.propertiesä¸­é…ç½®çš„æ•°æ®åº“ä¸é›†åˆï¼Œå¦‚æœªæŒ‡å®šï¼Œä½¿ç”¨MongoDBUtilä¸­é»˜è®¤çš„æ•°æ®åº“ä¸é›†åˆ
 	MongoDBService mongoDBService1 = new MongoDBServiceImpl();
 	private static Logger logger=Logger.getLogger(MyTaskAnnotation.class); 
     /**  
-     * ¶¨Ê±¼ÆËã¡£Ã¿ÌìÁè³¿ 01:00 Ö´ĞĞÒ»´Î  
+     * å®šæ—¶è®¡ç®—ã€‚æ¯å¤©å‡Œæ™¨ 01:00 æ‰§è¡Œä¸€æ¬¡  
      */    
     @Scheduled(cron = "0 0 1 * * *")   
     public void show(){  
-        System.out.println("Annotation£ºis show run");  
+        System.out.println("Annotationï¼šis show run");  
     }
     public void insert(){
     	String dates=new SimpleDateFormat("yyyy-mm-dd H:mm:ss").format(new Date());
-    	//Êı¾İÒ»£¬°üÀ¨ÓÃ»§Ãû¡¢ÃÜÂë£¬µØÖ·ĞÅÏ¢£¨Ê¡·İ¡¢³ÇÊĞ£©£¬°®ºÃ[¡­]
+    	//æ•°æ®ä¸€ï¼ŒåŒ…æ‹¬ç”¨æˆ·åã€å¯†ç ï¼Œåœ°å€ä¿¡æ¯ï¼ˆçœä»½ã€åŸå¸‚ï¼‰ï¼Œçˆ±å¥½[â€¦]
 		BasicDBList dbList1 = new BasicDBList();
 		dbList1.add("basketball");
 		dbList1.add("music");
 		dbList1.add("web");
 		DBObject dbObject1 = new BasicDBObject("username","insert1")
-			.append("age", 18).append("Ìí¼ÓÊ±¼ä£º", dates)
-			.append("address", new BasicDBObject("province","¹ã¶«").append("city", "¹ãÖİ"))
+			.append("age", 18).append("æ·»åŠ æ—¶é—´ï¼š", dates)
+			.append("address", new BasicDBObject("province","å¹¿ä¸œ").append("city", "å¹¿å·"))
 			.append("favourite", dbList1);
 		mongoDBService1.insert(dbObject1);
-		logger.info("spring task¶¨Ê±Ö´ĞĞ³É¹¦"+dates);
+		logger.info("spring taskå®šæ—¶æ‰§è¡ŒæˆåŠŸ"+dates);
     }
       
     /**  
-     * ĞÄÌø¸üĞÂ¡£Æô¶¯Ê±Ö´ĞĞÒ»´Î£¬Ö®ºóÃ¿¸ô16ÃëÖ´ĞĞÒ»´Î  
+     * å¿ƒè·³æ›´æ–°ã€‚å¯åŠ¨æ—¶æ‰§è¡Œä¸€æ¬¡ï¼Œä¹‹åæ¯éš”16ç§’æ‰§è¡Œä¸€æ¬¡  
      */    
     @Scheduled(fixedRate = 1000*16)   
     public void print(){  
-        System.out.println("Annotation£ºprint run");  
+        System.out.println("Annotationï¼šprint run");  
         insert();
     }  
 }  
