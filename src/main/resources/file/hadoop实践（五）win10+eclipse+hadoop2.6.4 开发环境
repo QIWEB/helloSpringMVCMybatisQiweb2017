@@ -1,0 +1,473 @@
+
+
+关闭
+csolo的博客
+
+    目录视图
+    摘要视图
+    订阅
+
+hadoop实践（五）win10+eclipse+hadoop2.6.4 开发环境
+标签： hadoop大数据eclipse
+2016-06-15 00:23 3894人阅读 评论(0) 收藏 举报
+分类：
+大数据（8） HADOOP（9）
+
+版权声明：本文为博主原创文章，未经博主允许不得转载。
+
+本人环境为win10（才从win7升级）
+
+        eclipse是  Kepler Service Release 1
+
+        在win10下，安装了vm workstation，其上安装了centos6.5 ，并在上面部署了hadoop2.6.4的伪分布式安装
+
+一、 目标
+
+        设置win10下的eclipse开发环境，并且可以在此环境上开发Hadoop应用，并在伪分布式hadoop环境下测试。  
+
+二、准备
+
+       1、eclipse  （  Kepler Service Release 1）
+
+       2、 hadoop2.6.4
+
+       3、 hadoop.dll 和  winutils
+
+       4、 wordcount 代码
+
+      5、 wordcount 所需要的统计单词的文本源
+
+      6、 hadoop for eclipse的插件，本人使用的插件为 hadoop-eclipse-plugin-2.6.4.jar
+
+       
+
+三、环境搭建步骤
+
+      1、 将hadoop2.6.4解压 在win10系统的任意目录下。 （就是为了配置eclipse用，实际联调的时候，是连接Linux 虚机上的伪分布式hadoop）
+
+      2、 设置win10的环境变量，通过控制面板-》系统-》高级设置-》环境变量  需要设置如下几个环境变量，已本人机器为例：
+
+           
+
+                JAVA_HOME=C:\Program Files (x86)\Java\jre6\bin               
+
+                HADOOP_HOME=E:\cwqwork\develop\hadoop-2.6.4
+
+                path 增加最后 E:\cwqwork\develop\hadoop-2.6.4\bin
+
+       3、拷贝插件到  eclipse安装目录下的plugsin目录
+
+       4、 启动eclipse，  windows-》hadoop Map/Reduce
+
+               在 hadoop installation directory 里面，填入 前面第1步解压的目录，点击OK
+
+        5、 界面最右边新出先的 Map/Reduce标签点中， 在最左边Project Explorer 会出现  DFS Locations。
+
+              界面最右下角有个蓝色小象，点击后，设置  hadoop location
+
+         6、上面设置好后，就可以 一层一层浏览   DFS Locations。 这里显示的是 linux下hadoop的dfs系统
+
+四、  测试工程代码
+
+          1、 新建工程，选other -》map reduce project， 然后输入工程名称等等，建立新的工程
+
+          2、 创建 WordCount 类
+
+                 代码如下：
+
+[java] view plain copy
+
+    import java.io.IOException;  
+    import java.util.StringTokenizer;  
+      
+    import org.apache.hadoop.conf.Configuration;  
+    import org.apache.hadoop.fs.Path;  
+    import org.apache.hadoop.io.IntWritable;  
+    import org.apache.hadoop.io.Text;  
+    import org.apache.hadoop.mapreduce.Job;  
+    import org.apache.hadoop.mapreduce.Mapper;  
+    import org.apache.hadoop.mapreduce.Reducer;  
+    import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;  
+    import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;  
+    import org.apache.hadoop.util.GenericOptionsParser;  
+      
+    public class WordCount {  
+      
+      public static class TokenizerMapper   
+           extends Mapper<Object, Text, Text, IntWritable>{  
+      
+        private final static IntWritable one = new IntWritable(1);  
+        private Text word = new Text();  
+      
+        public void map(Object key, Text value, Context context  
+                        ) throws IOException, InterruptedException {  
+          StringTokenizer itr = new StringTokenizer(value.toString());  
+          while (itr.hasMoreTokens()) {  
+            word.set(itr.nextToken());  
+            context.write(word, one);  
+          }  
+        }  
+      }  
+      
+      public static class IntSumReducer   
+           extends Reducer<Text,IntWritable,Text,IntWritable> {  
+        private IntWritable result = new IntWritable();  
+      
+        public void reduce(Text key, Iterable<IntWritable> values,   
+                           Context context  
+                           ) throws IOException, InterruptedException {  
+          int sum = 0;  
+          for (IntWritable val : values) {  
+            sum += val.get();  
+          }  
+          result.set(sum);  
+          context.write(key, result);  
+        }  
+      }  
+      
+      public static void main(String[] args) throws Exception {  
+        Configuration conf = new Configuration();  
+        //conf.set("mapred.job.tracker","192.168.136.155:9001" );  
+        //conf.set("fs.default.name","192.168.136.155:9000" );  
+          
+        String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();  
+         
+        if (otherArgs.length != 2) {  
+          System.err.println("Usage: wordcount <in> <out>");  
+          System.exit(2);  
+        }  
+        System.out.println ("Usage: wordcount <in> <out>" + otherArgs[0] +"  "+ otherArgs[1] );  
+          
+        Job job = new Job(conf, "wordcount");  
+        job.setJarByClass(WordCount.class);  
+        job.setMapperClass(TokenizerMapper.class);  
+        job.setCombinerClass(IntSumReducer.class);  
+        job.setReducerClass(IntSumReducer.class);  
+        job.setOutputKeyClass(Text.class);  
+        job.setOutputValueClass(IntWritable.class);  
+        FileInputFormat.addInputPath(job, new Path(otherArgs[0]));  
+        FileOutputFormat.setOutputPath(job, new Path(otherArgs[1]));  
+          
+        System.out.println ("add input path:" + otherArgs[0]);      
+        System.out.println ("set output path:" + otherArgs[1]);   
+        System.out.println ("begin wait job completion");  
+          
+        job.waitForCompletion(true);    
+      }  
+    }  
+
+
+
+                 创建完成后， 在linux 虚机上导入需要统计的文本
+
+                 文本1：Hello world Hello me! cwq solo
+
+                 文本2： Hello world Hello you! solo
+
+                 在linux 目录 /opt/hadoop/input/wordcount  下：
+
+                      echo "Hello world Hello me! cwq solo"  >test1.txt
+
+                      echo " Hello world Hello you! solo"  >test2.txt
+
+             hadoop fs -put  /opt/hadoop/input/wordcount input
+
+       3、 完成后，在类上右键-》run configuration-》 输入参数
+
+                 hdfs://192.168.136.155:9000/user/hadoop/input/wordcount  hdfs://192.168.136.155:9000/user/hadoop/output/wordcount
+
+                 输入后，不要执行。
+
+                然后，用run on hadoop 方式执行。
+
+
+          4、 正常情况下，会报异常：
+
+[java] view plain copy
+
+    Exception in thread "main" java.lang.NullPointerException  
+    at java.lang.ProcessBuilder.start(ProcessBuilder.java:441)  
+    at org.apache.hadoop.util.Shell.runCommand(Shell.java:445)  
+    at org.apache.hadoop.util.Shell.run(Shell.java:418)  
+
+             原因是，没有安装补丁。  将 hadoop.dll 和  winutils 拷贝到  win10上hadoop目录下bin目录。
+
+             
+
+
+          5、 再次运行，没有异常，但是运行结束，查看dfs 没有output结果， console没有输出异常。 这里纠结很久。
+
+                 解决办法：在src 目录下，建立log.properities文件，使得log4j 可以打印
+
+            
+[java] view plain copy
+
+    log4j.rootLogger=debug,stdout,R  
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender  
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout  
+    log4j.appender.stdout.layout.ConversionPattern=%5p - %m%n  
+    log4j.appender.R=org.apache.log4j.RollingFileAppender  
+    log4j.appender.R.File=mapreduce_test.log  
+    log4j.appender.R.MaxFileSize=1MB  
+    log4j.appender.R.MaxBackupIndex=1  
+    log4j.appender.R.layout=org.apache.log4j.PatternLayout  
+    log4j.appender.R.layout.ConversionPattern=%p %t %c - %m%  
+    log4j.logger.com.codefutures=DEBUG  
+
+
+              6、再次运行，console打印会有error
+
+ WARN - job_local194089354_0001
+org.apache.hadoop.security.AccessControlException: Permission denied: user=Administrator, access=WRITE, inode="/user/hadoop/output":hadoop:supergroup:drwxr-xr-x
+at org.apache.hadoop.hdfs.server.namenode.FSPermissionChecker.checkFsPermission(FSPermissionChecker.java:271)
+
+
+                说明是权限问题， eclipse是用Administrator启动的，连接linux下的hadoop是用此用户，所以权限禁止。
+
+解决办法：
+
+1）、如果是测试环境，可以取消hadoop hdfs的用户权限检查。打开conf/hdfs-site.xml，找到dfs.permissions属性修改为false（默认为true）OK了。
+2）、修改hadoop location参数，在advanced parameter选项卡中，找到hadoop.job.ugi项，将此项改为启动hadoop的用户名即可
+3）、 修改window 机器的用户名为 hadoop 用户名。
+
+ 
+
+          7、执行，这次正确执行完成，console 不报告错误， dfs location 右键 -》reconnect -》一层一层点开，最后output 目录下看到统计单词结果。
+
+Hello 4
+cwq 1
+me! 1
+solo 2
+world 2
+you! 1
+
+
+
+
+
+                
+
+顶
+    0
+
+踩
+    0
+
+ 
+ 
+
+    上一篇
+    hadoop实践（四） hadoop伪分布式发布
+    下一篇
+    hadoop实践（六）eclipse 打包和liunx下运行
+
+  相关文章推荐
+
+    • win7下Eclipse开发Hadoop应用程序环境搭建
+    • win10 64位+Eclipse Neon 4.6.0+hadoop2.6.0开发环境搭建
+    • win8下hadoop2.2搭建单点开发环境问题
+    • Win7+Eclipse+Hadoop2.6.4开发环境搭建
+    • Win7-64位hadoop开发环境准备_Cygwin安装
+
+    • win10+eclipse+hadoop2.6.0 开发环境
+    • hadoop 在win系统中的eclipse开发测试问题及解决
+    • Win下hadoop、eclipse开发环境搭建
+    • 基于Eclipse的Hadoop应用开发环境配置
+    • Hadoop学习笔记（4）－Eclipse下搭建Hadoop2.6.4开发环境并写wordcount
+
+猜你在找
+    深度学习基础与TensorFlow实践 
+    【在线峰会】前端开发重点难点技术剖析与创新实践 
+    【在线峰会】一天掌握物联网全栈开发之道 
+    【在线峰会】如何高质高效的进行Android技术开发 
+    机器学习40天精英计划 
+    Python数据挖掘与分析速成班 
+    微信小程序开发实战 
+    JFinal极速开发企业实战 
+    备战2017软考 系统集成项目管理工程师 学习套餐 
+    Python大型网络爬虫项目开发实战（全套） 
+
+查看评论
+
+  暂无评论
+
+发表评论
+
+    用 户 名：
+    zqsystem
+
+    评论内容：
+    插入代码
+
+      
+
+* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场
+
+    个人资料
+
+    [访问我的空间]
+    csolo
+    3
+        访问：60502次
+        积分：1443
+        等级：
+        排名：千里之外
+        原创：78篇
+        转载：17篇
+        译文：1篇
+        评论：10条
+
+    文章搜索
+
+    文章分类
+
+    HADOOP(10)
+    CEP(3)
+    REDIS(4)
+    ZABBIX(5)
+    流事件处理(0)
+    学习(5)
+    ORACLE(0)
+    大数据(9)
+    JMS(2)
+    分布式(0)
+    KAFKA(4)
+    JAVA WEB(3)
+    JTOPO(1)
+    MAVEN(3)
+    JBOSS(2)
+    LINUX(5)
+    ZOOKEEPER(4)
+    MYSQL(3)
+    cloudera(2)
+    HIVE(3)
+    Python(1)
+    区块链(1)
+    Akka(3)
+    JAVA(16)
+    ELK(1)
+    PHP(1)
+    分布式开发(0)
+    JSON(1)
+    RMI(1)
+    RPC(5)
+    Hessian(1)
+    Dubbo(1)
+    junit(1)
+    Webservice，Soap，Java(0)
+    Webservice(7)
+    Soap(6)
+    CXF(1)
+    Sping(3)
+    OpenStack(3)
+    技术管理(1)
+    nginx(1)
+    HTTP(5)
+    SVN(0)
+    Jenkins(1)
+    Devops(3)
+    Findbugs(1)
+    Checkstyle(0)
+
+    文章存档
+
+    2017年06月(1)
+    2017年05月(6)
+    2017年04月(3)
+    2017年03月(1)
+    2017年02月(8)
+    展开
+
+    阅读排行 
+
+    理解区块链(4071)
+    hadoop实践（五）win10+eclipse+hadoop2.6.4 开发环境(3880)
+    ZABBIX实践（三） window下的Agent端部署以及服务端汉化(3232)
+    RPC实践（四）Dubbo实践(3027)
+    Zabbix实践（五）：基于java的zabbix api调用实现数据共享(2552)
+    CDH5实践（四）Cloudera Manager 5安装中碰到的一些问题和解决办法(2213)
+    ZABBIX实践（一） 服务端部署和安装(1978)
+    Kafka实践（三） java开发环境搭建(1947)
+    java对象实例化的几种方法(1869)
+    CDH5实践（三）Cloudera Manager 5卸载步骤(1806)
+
+    评论排行
+
+    JBOSS实践一：安装(6)
+    ZABBIX实践（一） 服务端部署和安装(2)
+    Webservice实践（一） Webservice基础和SOAP简单介绍(2)
+    理解区块链(1)
+    Zabbix实践（五）：基于java的zabbix api调用实现数据共享(1)
+    Webservice实践（四）基于AXIS2的服务端开发(1)
+    Kafka实践（三） java开发环境搭建(1)
+    Redis实践（二）高可用的集群+哨兵部署(1)
+    RPC实践（四）Dubbo实践(1)
+    技术管理者培训小结一：内在修养(0)
+
+    推荐文章
+
+        * CSDN日报20170620——《找一个好工作，谈一份好薪水》
+        * 一文理清散乱的物联网里开发者必须关注的技术！
+        * Android APK反编译就这么简单 详解
+        * 如何选择优化器 optimizer
+        * 性能测试场景设计杂谈
+        * 每周荐书：架构、Scratch、增长黑客（评论送书）
+
+    最新评论
+
+    理解区块链
+
+    msatergz: 赞一个
+    Kafka实践（三） java开发环境搭建
+
+    时光验证经典: .start()???
+    Webservice实践（四）基于AXIS2的服务端开发
+
+    孙华强: CSDN博友你好，我是孙华强，现将此篇博文收录进“Java知识库”。CSDN现在在做CSDN博客专栏...
+    Webservice实践（一） Webservice基础和SOAP简单介绍
+
+    csolo: 估计接触的少了，多了就不糊涂了。
+    Webservice实践（一） Webservice基础和SOAP简单介绍
+
+    快乐起航2020: 13年10月开始的开发 工作，现在这些还是看得稀里糊涂的，正常么？大神
+    ZABBIX实践（一） 服务端部署和安装
+
+    csolo: 图形界面出不来，一般是php安装的不正常，建议检查一下php是否正常。 可以/var/www/htm...
+    ZABBIX实践（一） 服务端部署和安装
+
+    jicongyuan: 那个我的图形界面显示不出来，求大神解答
+    RPC实践（四）Dubbo实践
+
+    cmdos: 写得很好。。
+    Redis实践（二）高可用的集群+哨兵部署
+
+    Java_攻城狮: 666 有难度
+    Zabbix实践（五）：基于java的zabbix api调用实现数据共享
+
+    Liuyh007: so 父类 ZabbixApiTestDummyMethodBase 提供下啊
+
+    公司简介
+    |
+    招贤纳士
+    |
+    广告服务
+    |
+    联系方式
+    |
+    版权声明
+    |
+    法律顾问
+    |
+    问题报告
+    |
+    合作伙伴
+    |
+    论坛反馈
+    网站客服
+    杂志客服
+    微博客服
+    webmaster@csdn.net
+    400-660-0108|北京创新乐知信息技术有限公司 版权所有|江苏知之为计算机有限公司|江苏乐知网络技术有限公司
+    京 ICP 证 09002463 号|Copyright © 1999-2017, CSDN.NET, All Rights Reserved 
+    GongshangLogo
+

@@ -1,0 +1,155 @@
+MySQL的Query Cache原理分析
+
+QueryCache(下面简称QC)是根据SQL语句来cache的。一个SQL查询如果以select开头，那么MySQL服务器将尝试对其使用QC。每个Cache都是以SQL文本作为key来存的。
+
+原理 
+QueryCache(下面简称QC)是根据SQL语句来cache的。一个SQL查询如果以select开头，那么MySQL服务器将尝试对其使用QC。每个Cache都是以SQL文本作为key来存的。在应用QC之前，SQL文本不会被作任何处理。也就是说，两个SQL语句，只要相差哪怕是一个字符（例如大小写不一样；多一个空格等），那么这两个SQL将使用不同的一个CACHE。 
+不过SQL文本有可能会被客户端做一些处理。例如在官方的命令行客户端里，在发送SQL给服务器之前，会做如下处理：  
+
+过滤所有注释  
+去掉SQL文本前后的空格,TAB等字符。注意，是文本前面和后面的。中间的不会被去掉。  
+
+下面的三条SQL里，因为SELECT大小写的关系，最后一条和其他两条在QC里肯定是用的不一样的存储位置。而第一条和第二条，区别在于后者有个注释，在不同客户端，会有不一样的结果。所以，保险起见，请尽量不要使用动态的注释。在PHP的mysql扩展里，SQL的注释是不会被去掉的。也就是三条SQL会被存储在三个不同的缓存里，虽然它们的结果都是一样的。  
+
+select * FROM people where name='surfchen';  
+select * FROM people where /*hey~*/name='surfchen';  
+SELECT * FROM people where name='surfchen';  
+目前只有select语句会被cache，其他类似show,use的语句则不会被cache。 
+
+因为QC是如此前端，如此简单的一个缓存系统，所以如果一个表被更新，那么和这个表相关的SQL的所有QC都会被失效。假设一个联合查询里涉及到了表A和表B，如果表A或者表B的其中一个被更新（update或者delete），这个查询的QC将会失效。 
+
+也就是说，如果一个表被频繁更新，那么就要考虑清楚究竟是否应该对相关的一些SQL进行QC了。一个被频繁更新的表如果被应用了QC，可能会加重数据库的负担，而不是减轻负担。我一般的做法是默认打开QC，而对一些涉及频繁更新的表的SQL语句加上SQL_NO_CACHE关键词来对其禁用CACHE。这样可以尽可能避免不必要的内存操作，尽可能保持内存的连续性。 
+
+那些查询很分散的SQL语句，也不应该使用QC。例如用来查询用户和密码的语句——“select pass from user where name='surfchen'”。这样的语句，在一个系统里，很有可能只在一个用户登陆的时候被使用。每个用户的登陆所用到的查询，都是不一样的SQL文本，QC在这里就几乎不起作用了，因为缓存的数据几乎是不会被用到的，它们只会在内存里占地方。 
+
+存储块 
+在本节里“存储块”和“block”是同一个意思 
+QC缓存一个查询结果的时候，一般情况下不是一次性地分配足够多的内存来缓存结果的。而是在查询结果获得的过程中，逐块存储。当一个存储块被填满之后，一个新的存储块将会被创建，并分配内存（allocate）。单个存储块的内存分配大小通过query_cache_min_res_unit参数控制，默认为4KB。最后一个存储块，如果不能被全部利用，那么没使用的内存将会被释放。如果被缓存的结果很大，那么会可能会导致分配内存操作太频繁，系统系能也随之下降；而如果被缓存的结果都很小，那么可能会导致内存碎片过多，这些碎片如果太小，就很有可能不能再被分配使用。 
+
+除了查询结果需要存储块之外，每个SQL文本也需要一个存储块，而涉及到的表也需要一个存储块（表的存储块是所有线程共享的，每个表只需要一个存储块）。存储块总数量=查询结果数量*2+涉及的数据库表数量。也就是说，第一个缓存生成的时候，至少需要三个存储块：表信息存储块，SQL文本存储块，查询结果存储块。而第二个查询如果用的是同一个表，那么最少只需要两个存储块：SQL文本存储块，查询结果存储块。 
+
+通过观察Qcache_queries_in_cache和Qcache_total_blocks可以知道平均每个缓存结果占用的存储块。它们的比例如果接近1:2，则说明当前的query_cache_min_res_unit参数已经足够大了。如果Qcache_total_blocks比Qcache_queries_in_cache多很多，则需要增加query_cache_min_res_unit的大小。 
+
+Qcache_queries_in_cache*query_cache_min_res_unit（sql文本和表信息所在的block占用的内存很小，可以忽略）如果远远大于query_cache_size-Qcache_free_memory，那么可以尝试减小query_cache_min_res_unit的值。 
+
+调整大小 
+如果Qcache_lowmem_prunes增长迅速，意味着很多缓存因为内存不够而被释放，而不是因为相关表被更新。尝试加大query_cache_size，尽量使Qcache_lowmem_prunes零增长。  
+启动参数 
+show variables like 'query_cache%'可以看到这些信息。 
+query_cache_limit:如果单个查询结果大于这个值，则不Cache  
+query_cache_size:分配给QC的内存。如果设为0，则相当于禁用QC。要注意QC必须使用大约40KB来存储它的结构，如果设定小于40KB,则相当于禁用QC。QC存储的最小单位是1024 byte，所以如果你设定了一个不是1024的倍数的值，这个值会被四舍五入到最接近当前值的等于1024的倍数的值。  
+query_cache_type:0 完全禁止QC，不受SQL语句控制（另外可能要注意的是，即使这里禁用，上面一个参数所设定的内存大小还是会被分配）；1启用QC，可以在SQL语句使用SQL_NO_CACHE禁用；2可以在SQL语句使用SQL_CACHE启用。  
+query_cache_min_res_unit:每次给QC结果分配内存的大小  
+状态 
+show status like 'Qcache%'可以看到这些信息。 
+Qcache_free_blocks:当一个表被更新之后，和它相关的cache blocks将被free。但是这个block依然可能存在队列中，除非是在队列的尾部。这些blocks将会被统计到这个值来。可以用FLUSH QUERY CACHE语句来清空free blocks。  
+Qcache_free_memory:可用内存，如果很小，考虑增加query_cache_size  
+Qcache_hits:自mysql进程启动起，cache的命中数量  
+Qcache_inserts:自mysql进程启动起，被增加进QC的数量  
+Qcache_lowmem_prunes:由于内存过少而导致QC被删除的条数。加大query_cache_size，尽可能保持这个值0增长。  
+Qcache_not_cached:自mysql进程启动起，没有被cache的只读查询数量（包括select,show,use,desc等）  
+Qcache_queries_in_cache:当前被cache的SQL数量  
+Qcache_total_blocks:在QC中的blocks数。一个query可能被多个blocks存储，而这几个blocks中的最后一个，未用满的内存将会被释放掉。例如一个QC结果要占6KB内存，如果query_cache_min_res_unit是4KB，则最后将会生成3个blocks，第一个block用来存储sql语句文本，这个不会被统计到query+cache_size里，第二个block为4KB，第三个block为2KB（先allocate4KB，然后释放多余的2KB）。每个表，当第一个和它有关的SQL查询被CACHE的时候，会使用一个block来存储表信息。也就是说，block会被用在三处地方：表信息，SQL文本，查询结果。
+
+
+
+mysql的SQL_NO_CACHE(在查询时不使用缓存)和sql_cache用法
+ 
+分享到：
+    发布时间:2013-12-17  
+
+
+    本文导语:  为了测试sql语句的效率，有时候要不用缓存来查询。 使用 SELECT SQL_NO_CACHE ... 语法即可 SQL_NO_CACHE的真正作用是禁止缓存查询结果，但并不意味着cache不作为结果返回给query。 目前流传的SQL_NO_CACH...
+
+ 为了测试sql语句的效率，有时候要不用缓存来查询。
+
+ 使用  
+
+  SELECT SQL_NO_CACHE ...
+
+ 语法即可
+
+ SQL_NO_CACHE的真正作用是禁止缓存查询结果，但并不意味着cache不作为结果返回给query。
+
+ 目前流传的SQL_NO_CACHE不外乎两种解释：
+
+1.对当前query不使用数据库已有缓存来查询，则当前query花费时间会多点
+
+2.对当前query的产生的结果集不缓存至系统query cache里，则下次相同query花费时间会多点
+
+我做了下实验，似乎两种都对。
+
+ sql_cache意思是说，查询的时候使用缓存。
+
+ 对SQL_NO_CACHE的解释及测试如下:
+
+SQL_NO_CACHE means that the query result is not cached. It does not mean
+
+that the cache is not used to answer the query.
+
+
+You may use RESET QUERY CACHE to remove all queries from the cache and
+
+then your next query should be slow again. Same effect if you change
+
+the table, because this makes all cached queries invalid.
+
+
+mysql> select count(*) from users where email = 'hello';
+
++----------+
+
+| count(*) |
+
++----------+
+
+| 0 |
+
++----------+
+
+1 row in set (7.22 sec)
+
+mysql> select count(*) from users where email = 'hello';
+
++----------+
+
+| count(*) |
+
++----------+
+
+| 0 |
+
++----------+
+
+1 row in set (0.45 sec)
+
+mysql> select count(*) from users where email = 'hello';
+
++----------+
+
+| count(*) |
+
++----------+
+
+| 0 |
+
++----------+
+
+1 row in set (0.45 sec)
+
+mysql> select SQL_NO_CACHE count(*) from users where email = 'hello';
+
++----------+
+
+| count(*) |
+
++----------+
+
+| 0 |
+
++----------+
+
+1 row in set (0.43 sec)
+
+
+转载：http://www.jb51.net/article/15179.htm

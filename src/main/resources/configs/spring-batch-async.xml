@@ -34,8 +34,8 @@
             <value><![CDATA[select first_name ,last_name from people where
             first_name like ? or last_name like ?]]></value>
         </property>
-        <property name="rowMapper" ref="peopleRowMapper" />
-        <property name="preparedStatementSetter" ref="preparedStatementSetter" />
+        <!--  <property name="rowMapper" ref="peopleRowMapper" />
+        <property name="preparedStatementSetter" ref="preparedStatementSetter" />-->
         <property name="fetchSize" value="20" />
     </bean>
 
@@ -45,8 +45,8 @@
     </bean>
     <bean id="asyncExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor" />
     <bean id="asynWriter" class="com.lyx.batch.AsyncPeopleAddDescItemWriter" />
-    <bean id="peopleRowMapper" class="com.lyx.batch.PeopleRowMapper" />
-    <bean id="preparedStatementSetter" class="com.lyx.batch.PeoplePreparedStatementSetter" />
+    <!--<bean id="peopleRowMapper" class="com.lyx.batch.PeopleRowMapper" />
+    <bean id="preparedStatementSetter" class="com.lyx.batch.PeoplePreparedStatementSetter" /> -->
 
     <!--tomcat jdbc pool数据源配置 -->
     <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource"

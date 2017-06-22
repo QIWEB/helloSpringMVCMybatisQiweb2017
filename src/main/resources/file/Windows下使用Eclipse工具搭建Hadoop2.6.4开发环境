@@ -1,0 +1,227 @@
+http://blog.csdn.net/sl1992/article/details/53157808
+
+
+
+关闭
+sl1992的博客
+
+    目录视图
+    摘要视图
+    订阅
+
+Windows下使用Ant编译hadoop-eclipse-plugin-2.x插件
+标签： hadoop插件ant
+2016-11-14 12:33 314人阅读 评论(0) 收藏 举报
+分类：
+Hadoop（3）
+
+版权声明：本文为博主原创文章，未经博主允许不得转载。
+
+    下载Ant，apache-ant-1.9.7-bin.zip，需要下载以前的版本可点击。
+        1.1 解压文件到一个目录，配置相应的环境变量
+        ANT_HOME=E:\Program Files (x86)\apache-ant-1.9.7
+        PATH=原路径;%ANT_HOME%\bin;
+        1.2 验证是否安装成功ant -version
+        ant安装成功
+    下载Hadoop，这里选择2.6.4版本，即搭建伪分布式环境的版本
+    由于编译hadoop的eclipse插件需要hadoop相应的jar包，需要有hadoop的安装文件。将hadoop-2.6.4.tar.gz文件解压至本地目录下，也可以是自己编译过后的hadoop文件(hadoop版本是在32位下打包，可编译成64位版本的)。
+    注：hadoop文件存放目录不要带有空格，不然编译不成功；在Windows系统下开发hadoop程序，hadoop文件安装目录也不能带有空格。
+    下载Eclipse，解压缩到本地目录下
+    注：在用Ant编译hadoop-eclipse-plugin-2.x时需要Eclipse的安装目录，Eclipse文件安装目录也不能带有空格。
+    编译好hadoop-eclipse-plugin-2.x.jar插件后，可以重新将Eclipse安装目录拷贝到自己想要的目录下。
+    下载hadoop2x-eclipse-plugin-master.zip，将文件解压缩到本地目录下
+    通过命令行cmd进入到..\hadoop2x-eclipse-plugin-master\src\contrib\eclipse-plugin目录下，或者直接在这个目录下按住Shift+鼠标右键，选择在此处打开命令窗口
+    在此处打开命令窗口
+    执行命令
+    ant jar -Dversion=2.6.4 -Declipse.home=E:\ProgramFiles\eclipse -Dhadoop.home=F:\data\hadoop-2.6.4
+    或者
+    ant jar -Dhadoop.version=2.6.4 -Declipse.home=E:\ProgramFiles\eclipse -Dhadoop.home=F:\data\hadoop-2.6.4
+    -Dversion，-Dhadoop.version都表示的是hadoop的版本
+    -Declipse.home表示的是eclipse的安装目录，就是需要使用的eclipse的目录
+    -Dhadoop.home表示的是hadoop的目录　　　
+    执行命令会发现一直停在ivy-resolve-common处一直不动
+    一直停留在common
+    ​ 出现这个问题的原因是执行上面的命令的时候，会查找相应的jar包，若没有的会一直停在那里，但实际上编译hadoop-eclipse-plugin并不需要common相关的包。
+    解决：修改执行命令行目录(即..\hadoop2x-eclipse-plugin-master\src\contrib\eclipse-plugin)下的build.xml文件，找到：<target name="compile" depends="init, ivy-retrieve-common" unless="skip.contrib">对应的行，
+    找到compile
+    去掉depends=”init, ivy-retrieve-common” 修改为<target name="compile" unless="skip.contrib">。
+    在cmd命令行中Ctrl+C，输入Y终止批处理操作
+    Ctrl+c终止批处理
+    再次执行ant jar命令，提示copy不到相关jar包的错误
+    缺少jar包
+    这个问题的原因是..\hadoop2x-eclipse-plugin-master\ivy目录下的libraries.properties文件中的jar包的版本找不到，因为对应的是在hadoop2.6.4版本下编译，该阶段是将hadoop主目录下的jar包复制到插件当中，因此需要修改jar的版本。
+    　　解决：修改..\hadoop2x-eclipse-plugin-master\ivy\libraries.properties文件，将报错的jar包版本号更换成与hadoop安装目录\share\hadoop\common\lib下的jar对应的版本号。
+    修改配置文件
+    hadoop2.6.4版本只修改了hadoop.version以及commons-collections.version就成功了，如果执行仍然提示copy不到相关jar包的错误，可以根据提示修改对应版本号。
+    执行命令，此时编译成功
+    编译成功
+    生成的插件在..\hadoop2x-eclipse-plugin-master\build\contrib\eclipse-plugin目录下，如图BUILD SUCCESSFUL上一句也可以看到插件包生成的目录。
+
+此时Hadoop-eclipse-plugin-2.6.4.jar编译成功。
+
+顶
+    0
+
+踩
+    0
+
+ 
+ 
+
+    上一篇Hadoop2.6.4伪分布式环境搭建
+    下一篇Windows下使用Eclipse工具搭建Hadoop2.6.4开发环境
+
+  相关文章推荐
+
+    • hadoop 2.7.2 (hadoop2.x)使用ant制作eclipse插件hadoop-eclipse-plugin-2.7.2.jar
+    • Hadoop2.x eclipse plugin插件编译安装配置
+    • windows编译hadoop 2.x Hadoop-eclipse-plugin插件
+    • Linux下编译Hadoop的Eclipse插件
+    • Linux下Ant编译Hadoop-eclipse-plugin-2.x.x.jar插件
+
+    • 编译hadoop-eclipse插件
+    • Nutch2.1 in eclipse
+    • [置顶] Centos环境下：使用ant编译hadoop2.X版eclipse插件及其通用教程
+    • Centos环境下：使用ant编译hadoop2.X版eclipse插件及其通用教程
+    • 编译Hadoop 2.x Hadoop-eclipse-plugin插件
+
+猜你在找
+    深度学习基础与TensorFlow实践 
+    【在线峰会】前端开发重点难点技术剖析与创新实践 
+    【在线峰会】一天掌握物联网全栈开发之道 
+    【在线峰会】如何高质高效的进行Android技术开发 
+    机器学习40天精英计划 
+    Python数据挖掘与分析速成班 
+    微信小程序开发实战 
+    JFinal极速开发企业实战 
+    备战2017软考 系统集成项目管理工程师 学习套餐 
+    Python大型网络爬虫项目开发实战（全套） 
+
+查看评论
+
+  暂无评论
+
+发表评论
+
+    用 户 名：
+    zqsystem
+
+    评论内容：
+    插入代码
+
+      
+
+* 以上用户言论只代表其个人观点，不代表CSDN网站的观点或立场
+
+    个人资料
+
+    [访问我的空间]
+    sl1992
+    2
+        访问：9230次
+        积分：454
+        等级：
+        排名：千里之外
+        原创：38篇
+        转载：0篇
+        译文：0篇
+        评论：1条
+
+    文章搜索
+
+    文章分类
+
+    微信支付(1)
+    Linux(5)
+    js(2)
+    Hadoop(4)
+    HDFS(2)
+    MapReduce(1)
+    Hbase(2)
+    ZooKeeper(2)
+    Sqoop(3)
+    Hive(2)
+    Flume(0)
+    Storm(0)
+    ES(1)
+    Redis(2)
+    Kafka(0)
+    Hue(1)
+    算法题(8)
+    Http(1)
+    MQ(1)
+
+    文章存档
+
+    2017年05月(1)
+    2017年04月(4)
+    2017年03月(5)
+    2017年01月(4)
+    2016年12月(12)
+    展开
+
+    阅读排行 
+
+    Hive2.1.1的安装(1324)
+    Java操作ES(1201)
+    Hue3.11的编译安装(897)
+    Java操作Sqoop对象(723)
+    HTTP500内部服务器错误(580)
+    返回第n个无平方数因数的数(433)
+    Windows下使用Eclipse工具搭建Hadoop2.6.4开发环境(337)
+    Hadoop2.6.4版本64位编译(335)
+    MapReduce中Combiner的作用和用法(321)
+    Windows下使用Ant编译hadoop-eclipse-plugin-2.x插件(314)
+
+    评论排行
+
+    Windows下使用Eclipse工具搭建Hadoop2.6.4开发环境(1)
+    ActiveMQ的简介与安装(0)
+    Windows下使用Ant编译hadoop-eclipse-plugin-2.x插件(0)
+    Hadoop2.6.4伪分布式环境搭建(0)
+    Linux下安装jdk(0)
+    使用Xshell工具连接虚拟机(0)
+    CentOS6.5设置系统环境(0)
+    js字符串替换全部字符(0)
+    js获取日期:前天昨天今天明天(0)
+    使用VMWare虚拟机安装CentOS6.5系统(0)
+
+    推荐文章
+
+        * CSDN日报20170620——《找一个好工作，谈一份好薪水》
+        * 一文理清散乱的物联网里开发者必须关注的技术！
+        * Android APK反编译就这么简单 详解
+        * 如何选择优化器 optimizer
+        * 性能测试场景设计杂谈
+        * 每周荐书：架构、Scratch、增长黑客（评论送书）
+
+    最新评论
+
+    Windows下使用Eclipse工具搭建Hadoop2.6.4开发环境
+
+    u013209033: 顺着文章一步步坐下来，顺利的完成了wordCount程序的运行，很舒服
+
+    公司简介
+    |
+    招贤纳士
+    |
+    广告服务
+    |
+    联系方式
+    |
+    版权声明
+    |
+    法律顾问
+    |
+    问题报告
+    |
+    合作伙伴
+    |
+    论坛反馈
+    网站客服
+    杂志客服
+    微博客服
+    webmaster@csdn.net
+    400-660-0108|北京创新乐知信息技术有限公司 版权所有|江苏知之为计算机有限公司|江苏乐知网络技术有限公司
+    京 ICP 证 09002463 号|Copyright © 1999-2017, CSDN.NET, All Rights Reserved 
+    GongshangLogo
