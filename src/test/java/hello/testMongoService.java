@@ -15,7 +15,7 @@ import com.qiweb.mongodb.test.MongoDBService;
 import com.qiweb.mongodb.test.MongoDBServiceImpl;
 
 public class testMongoService {
-	//Ê¹ÓÃmongodb.cfg.propertiesÖĞÅäÖÃµÄÊı¾İ¿âÓë¼¯ºÏ£¬ÈçÎ´Ö¸¶¨£¬Ê¹ÓÃMongoDBUtilÖĞÄ¬ÈÏµÄÊı¾İ¿âÓë¼¯ºÏ
+	//ä½¿ç”¨mongodb.cfg.propertiesä¸­é…ç½®çš„æ•°æ®åº“ä¸é›†åˆï¼Œå¦‚æœªæŒ‡å®šï¼Œä½¿ç”¨MongoDBUtilä¸­é»˜è®¤çš„æ•°æ®åº“ä¸é›†åˆ
 	MongoDBService mongoDBService1 = new MongoDBServiceImpl();
 	
 	@Test
@@ -25,81 +25,81 @@ public class testMongoService {
 		dblist.add("language");
 		dblist.add("pop");
 		DBObject obj=new BasicDBObject("uname","qiweb").append("age",15)
-				.append("language", new BasicDBObject("pro","¹ã¶«").append("web", "xml"))
+				.append("language", new BasicDBObject("pro","å¹¿ä¸œ").append("web", "xml"))
 				.append("uu", dblist);
 		mongoDBService1.insert(obj);
 		mongoDBService1.printListDBObj(mongoDBService1.findAll());
 	}
 	
-	//²âÊÔ²åÈëÊı¾İ
+	//æµ‹è¯•æ’å…¥æ•°æ®
 	@Test
 	public void testInsert(){
-		//Êı¾İÒ»£¬°üÀ¨ÓÃ»§Ãû¡¢ÃÜÂë£¬µØÖ·ĞÅÏ¢£¨Ê¡·İ¡¢³ÇÊĞ£©£¬°®ºÃ[¡­]
+		//æ•°æ®ä¸€ï¼ŒåŒ…æ‹¬ç”¨æˆ·åã€å¯†ç ï¼Œåœ°å€ä¿¡æ¯ï¼ˆçœä»½ã€åŸå¸‚ï¼‰ï¼Œçˆ±å¥½[â€¦]
 		BasicDBList dbList1 = new BasicDBList();
 		dbList1.add("basketball");
 		dbList1.add("music");
 		dbList1.add("web");
 		DBObject dbObject1 = new BasicDBObject("username","insert1")
 			.append("age", 18)
-			.append("address", new BasicDBObject("province","¹ã¶«").append("city", "¹ãÖİ"))
+			.append("address", new BasicDBObject("province","å¹¿ä¸œ").append("city", "å¹¿å·"))
 			.append("favourite", dbList1);
-		//Êı¾İ¶ş
+		//æ•°æ®äºŒ
 		BasicDBList dbList2 = new BasicDBList();
 		dbList2.add("football");
 		dbList2.add("music");
 		DBObject dbObject2 = new BasicDBObject("username","insert2")
 			.append("age", 18)
-			.append("address", new BasicDBObject("province","ÉÂÎ÷").append("city", "Î÷°²"))
+			.append("address", new BasicDBObject("province","é™•è¥¿").append("city", "è¥¿å®‰"))
 			.append("favourite", dbList2);
-		//Êı¾İÈı
+		//æ•°æ®ä¸‰
 		BasicDBList dbList3 = new BasicDBList();
 		dbList3.add("Linux");
 		DBObject dbObject3 = new BasicDBObject("username","insert3")
 			.append("age", 18)
-			.append("address", new BasicDBObject("province","ºÓ±±").append("city", "±£¶¨"))
+			.append("address", new BasicDBObject("province","æ²³åŒ—").append("city", "ä¿å®š"))
 			.append("favourite", dbList3);
-		//Êı¾İËÄ
+		//æ•°æ®å››
 		BasicDBList dbList4 = new BasicDBList();
 		dbList4.add("swim");
 		dbList4.add("android");
 		DBObject dbObject4 = new BasicDBObject("username","insert4")
 			.append("age", 18)
-			.append("address", new BasicDBObject("province","ËÄ´¨").append("city", "³É¶¼"))
+			.append("address", new BasicDBObject("province","å››å·").append("city", "æˆéƒ½"))
 			.append("favourite", dbList4);
-		//Êı¾İÎå
+		//æ•°æ®äº”
 		DBObject dbObject5 = new BasicDBObject("username", "insert5")
 			.append("age", 28)
-			.append("address", new BasicDBObject("city", "º¼Öİ"));
+			.append("address", new BasicDBObject("city", "æ­å·"));
 		mongoDBService1.printListDBObj(mongoDBService1.findAll());
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªinsert collection¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”insert collectionâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		List<DBObject> list = new ArrayList<DBObject>();
 		list.add(dbObject1);
 		list.add(dbObject2);
 		list.add(dbObject3);
 		list.add(dbObject5);
 		mongoDBService1.insertBatch(list);
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªinsert one¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”insert oneâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.insert(dbObject4);
 		mongoDBService1.printListDBObj(mongoDBService1.findAll());
 	}
 	
-	//²âÊÔ²éÑ¯Êı¾İ
+	//æµ‹è¯•æŸ¥è¯¢æ•°æ®
 	@Test
 	public void testFind(){
 		DBObject dbObject = new BasicDBObject("username","insert1");
-		System.out.println("ÊıÁ¿£º" + mongoDBService1.getCollectionCount());
-		System.out.println("username=javaµÄÊı¾İÊıÁ¿£º" + mongoDBService1.getCount(dbObject));
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªfind all¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("æ•°é‡ï¼š" + mongoDBService1.getCollectionCount());
+		System.out.println("username=javaçš„æ•°æ®æ•°é‡ï¼š" + mongoDBService1.getCount(dbObject));
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”find allâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.printListDBObj(mongoDBService1.findAll());
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªfind obj¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”find objâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.printListDBObj(mongoDBService1.find(dbObject));
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªfind sort¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”find sortâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.printListDBObj(mongoDBService1.find(new BasicDBObject(), new BasicDBObject("age", 1)));
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªfind sort limit¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”find sort limitâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.printListDBObj(mongoDBService1.find(new BasicDBObject(), new BasicDBObject("age", 1), 1, 2));
 	}
 
-	//²âÊÔÊı¾İ¸üĞÂ
+	//æµ‹è¯•æ•°æ®æ›´æ–°
 	@Test
 	public void testUpdate(){
 		BasicDBObject newDocument = new BasicDBObject("$set",new BasicDBObject("age",11));
@@ -107,12 +107,12 @@ public class testMongoService {
 		BasicDBObject searchQuery = new BasicDBObject().append("username", "insert2");
 	
 		mongoDBService1.printListDBObj(mongoDBService1.find(searchQuery));
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªupdate¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”updateâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.update(newDocument, searchQuery);
 		mongoDBService1.printListDBObj(mongoDBService1.find(searchQuery));
 	}
 	
-	//²âÊÔÊı¾İÉ¾³ı
+	//æµ‹è¯•æ•°æ®åˆ é™¤
 	@Test
 	public void testDelete(){
 		DBObject dbObject1 = new BasicDBObject("username", "insert1");
@@ -126,21 +126,21 @@ public class testMongoService {
 		list.add(dbObject3);
 		list.add(dbObject4);
 		mongoDBService1.printListDBObj(mongoDBService1.findAll());
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªdelete list¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”delete listâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.deleteBatch(list);
-		System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªdelete one¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”delete oneâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		mongoDBService1.delete(dbObject5);
-		//System.out.println("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ªdelete all¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+		//System.out.println("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”delete allâ€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”");
 		//mongoDBService1.delete(new BasicDBObject());
 		mongoDBService1.printListDBObj(mongoDBService1.findAll());
 	}
 	@After
 	public void after(){
-		System.out.println("Ö´ĞĞºó==:");
+		System.out.println("æ‰§è¡Œå==:");
 	}
 	@Before
 	public void before(){
-		System.out.println("Ö´ĞĞÇ°==:"+new Date());
+		System.out.println("æ‰§è¡Œå‰==:"+new Date());
 	}
 
 }

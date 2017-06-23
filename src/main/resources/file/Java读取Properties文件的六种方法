@@ -1,0 +1,486 @@
+
+
+使用J2SE API读取Properties文件的六种方法
+
+1。使用java.util.Properties类的load()方法
+示例： InputStream in = lnew BufferedInputStream(new FileInputStream(name));
+Properties p = new Properties();
+p.load(in);
+
+2。使用java.util.ResourceBundle类的getBundle()方法
+示例： ResourceBundle rb = ResourceBundle.getBundle(name, Locale.getDefault());
+
+3。使用java.util.PropertyResourceBundle类的构造函数
+示例： InputStream in = new BufferedInputStream(new FileInputStream(name));
+ResourceBundle rb = new PropertyResourceBundle(in);
+
+4。使用class变量的getResourceAsStream()方法
+示例： InputStream in = JProperties.class.getResourceAsStream(name);
+Properties p = new Properties();
+p.load(in);
+
+5。使用class.getClassLoader()所得到的java.lang.ClassLoader的getResourceAsStream()方法
+示例： InputStream in = JProperties.class.getClassLoader().getResourceAsStream(name);
+Properties p = new Properties();
+p.load(in);
+
+6。使用java.lang.ClassLoader类的getSystemResourceAsStream()静态方法
+示例： InputStream in = ClassLoader.getSystemResourceAsStream(name);
+Properties p = new Properties();
+p.load(in);
+
+补充
+
+Servlet中可以使用javax.servlet.ServletContext的getResourceAsStream()方法
+示例：InputStream in = context.getResourceAsStream(path);
+Properties p = new Properties();
+p.load(in);
+
+完整的示例，可以参考附件文件
+ 
+JProperties.java文件
+
+
+//import javax.servlet.ServletContext;
+import java.util.*;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+
+
+public class JProperties {
+
+public final static int BY_PROPERTIES = 1;
+public final static int BY_RESOURCEBUNDLE = 2;
+public final static int BY_PROPERTYRESOURCEBUNDLE = 3;
+public final static int BY_CLASS = 4;
+public final static int BY_CLASSLOADER = 5;
+public final static int BY_SYSTEM_CLASSLOADER = 6;
+
+public final static Properties loadProperties(final String name, final int type) throws IOException {
+Properties p = new Properties();
+InputStream in = null;
+if (type == BY_PROPERTIES) {
+in = new BufferedInputStream(new FileInputStream(name));
+assert (in != null);
+p.load(in);
+} else if (type == BY_RESOURCEBUNDLE) {
+ResourceBundle rb = ResourceBundle.getBundle(name, Locale.getDefault());
+assert (rb != null);
+p = new ResourceBundleAdapter(rb);
+} else if (type == BY_PROPERTYRESOURCEBUNDLE) {
+in = new BufferedInputStream(new FileInputStream(name));
+assert (in != null);
+ResourceBundle rb = new PropertyResourceBundle(in);
+p = new ResourceBundleAdapter(rb);
+} else if (type == BY_CLASS) {
+assert (JProperties.class.equals(new JProperties().getClass()));
+in = JProperties.class.getResourceAsStream(name);
+assert (in != null);
+p.load(in);
+// return new JProperties().getClass().getResourceAsStream(name);
+} else if (type == BY_CLASSLOADER) {
+assert (JProperties.class.getClassLoader().equals(new JProperties().getClass().getClassLoader()));
+in = JProperties.class.getClassLoader().getResourceAsStream(name);
+assert (in != null);
+p.load(in);
+// return new JProperties().getClass().getClassLoader().getResourceAsStream(name);
+} else if (type == BY_SYSTEM_CLASSLOADER) {
+in = ClassLoader.getSystemResourceAsStream(name);
+assert (in != null);
+p.load(in);
+}
+
+if (in != null) {
+in.close();
+}
+return p;
+
+}
+
+// ---------------------------------------------- servlet used
+
+
+// ---------------------------------------------- support class
+
+
+public static class ResourceBundleAdapter extends Properties {
+public ResourceBundleAdapter(ResourceBundle rb) {
+assert (rb instanceof java.util.PropertyResourceBundle);
+this.rb = rb;
+java.util.Enumeration e = rb.getKeys();
+while (e.hasMoreElements()) {
+Object o = e.nextElement();
+this.put(o, rb.getObject((String) o));
+}
+}
+
+private ResourceBundle rb = null;
+
+public ResourceBundle getBundle(String baseName) {
+return ResourceBundle.getBundle(baseName);
+}
+
+public ResourceBundle getBundle(String baseName, Locale locale) {
+return ResourceBundle.getBundle(baseName, locale);
+}
+
+public ResourceBundle getBundle(String baseName, Locale locale, ClassLoader loader) {
+return ResourceBundle.getBundle(baseName, locale, loader);
+}
+
+public Enumeration getKeys() {
+return rb.getKeys();
+}
+
+public Locale getLocale() {
+return rb.getLocale();
+}
+
+public Object getObject(String key) {
+return rb.getObject(key);
+}
+
+public String getString(String key) {
+return rb.getString(key);
+}
+
+public String[] getStringArray(String key) {
+return rb.getStringArray(key);
+}
+
+protected Object handleGetObject(String key) {
+return ((PropertyResourceBundle) rb).handleGetObject(key);
+}
+
+}
+
+}
+
+JPropertiesTest.java文件
+
+
+package com.kindani.test;
+
+import junit.framework.*;
+import com.kindani.JProperties;
+
+//import javax.servlet.ServletContext;
+import java.util.Properties;
+
+public class JPropertiesTest extends TestCase {
+JProperties jProperties;
+String key = "helloworld.title";
+String value = "Hello World!";
+
+public void testLoadProperties() throws Exception {
+String name = null;
+Properties p = new Properties();
+
+name = "C:\\IDEAP\\Properties4Methods\\src\\com\\kindani\\test\\LocalStrings.properties";
+p = JProperties.loadProperties(name, JProperties.BY_PROPERTIES);
+assertEquals(value, p.getProperty(key));
+
+name = "com.kindani.test.LocalStrings";
+p = JProperties.loadProperties(name,JProperties.BY_RESOURCEBUNDLE);
+assertEquals(value, p.getProperty(key));
+assertEquals(value,((JProperties.ResourceBundleAdapter)p).getString(key));
+
+name = "C:\\IDEAP\\Properties4Methods\\src\\com\\kindani\\test\\LocalStrings.properties";
+p = JProperties.loadProperties(name, JProperties.BY_PROPERTYRESOURCEBUNDLE);
+assertEquals(value, p.getProperty(key));
+assertEquals(value,((JProperties.ResourceBundleAdapter)p).getString(key));
+
+name = "\\com\\kindani\\test\\LocalStrings.properties";
+p = JProperties.loadProperties(name, JProperties.BY_SYSTEM_CLASSLOADER);
+assertEquals(value, p.getProperty(key));
+
+name = "\\com\\kindani\\test\\LocalStrings.properties";
+p = JProperties.loadProperties(name, JProperties.BY_CLASSLOADER);
+assertEquals(value, p.getProperty(key));
+
+name = "test\\LocalStrings.properties";
+p = JProperties.loadProperties(name, JProperties.BY_CLASS);
+assertEquals(value, p.getProperty(key));
+}
+
+
+}
+
+properties文件与JPropertiesTest.java文件相同的目录下
+LocalStrings.properties文件
+# $Id: LocalStrings.properties,v 1.1 2000/08/17 00:57:52 horwat Exp $
+
+# Default localized resources for example servlets
+# This locale is en_US
+
+helloworld.title=Hello World!
+
+requestinfo.title=Request Information Example
+requestinfo.label.method=Method:
+requestinfo.label.requesturi=Request URI:
+requestinfo.label.protocol=Protocol:
+requestinfo.label.pathinfo=Path Info:
+requestinfo.label.remoteaddr=Remote Address:
+
+requestheader.title=Request Header Example
+
+requestparams.title=Request Parameters Example
+requestparams.params-in-req=Parameters in this request:
+requestparams.no-params=No Parameters, Please enter some
+requestparams.firstname=First Name:
+requestparams.lastname=Last Name:
+
+cookies.title=Cookies Example
+cookies.cookies=Your browser is sending the following cookies:
+cookies.no-cookies=Your browser isn't sending any cookies
+cookies.make-cookie=Create a cookie to send to your browser
+cookies.name=Name:
+cookies.value=Value:
+cookies.set=You just sent the following cookie to your browser:
+
+sessions.title=Sessions Example
+sessions.id=Session ID:
+sessions.created=Created:
+sessions.lastaccessed=Last Accessed:
+sessions.data=The following data is in your session:
+sessions.adddata=Add data to your session
+sessions.dataname=Name of Session Attribute:
+sessions.datavalue=Value of Session Attribute:
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+Java对properties配置文件的操作
+
+
+package com.yorsun;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServlet;
+
+
+public class PropertiesUnit {
+private String filename;
+
+private Properties p;
+
+private FileInputStream in;
+
+private FileOutputStream out;
+
+public PropertiesUnit(String filename) {
+this.filename = filename;
+File file = new File(filename);
+try {
+in = new FileInputStream(file);
+p = new Properties();
+p.load(in);
+in.close();
+} catch (FileNotFoundException e) {
+// TODO Auto-generated catch block
+System.err.println("配置文件config.properties找不到！");
+e.printStackTrace();
+} catch (IOException e) {
+// TODO Auto-generated catch block
+System.err.println("读取配置文件config.properties错误！");
+e.printStackTrace();
+}
+}
+
+public static String getConfigFile(HttpServlet hs) {
+return getConfigFile(hs, "config.properties");
+}
+
+
+private static String getConfigFile(HttpServlet hs, String configFileName) {
+String configFile = "";
+ServletContext sc = hs.getServletContext();
+configFile = sc.getRealPath("/" + configFileName);
+if (configFile == null || configFile.equals("")) {
+configFile = "/" + configFileName;
+}
+// TODO Auto-generated method stub
+return configFile;
+}
+
+public void list() {
+p.list(System.out);
+}
+
+public String getValue(String itemName) {
+return p.getProperty(itemName);
+}
+
+public String getValue(String itemName, String defaultValue) {
+return p.getProperty(itemName, defaultValue);
+}
+
+public void setValue(String itemName, String value) {
+p.setProperty(itemName, value);
+}
+
+public void saveFile(String filename, String description) throws Exception {
+try {
+File f = new File(filename);
+out = new FileOutputStream(f);
+p.store(out, description);
+out.close();
+} catch (IOException ex) {
+throw new Exception("无法保存指定的配置文件:" + filename);
+}
+}
+
+public void saveFile(String filename) throws Exception{
+saveFile(filename,"");
+}
+
+public void saveFile() throws Exception{
+if(filename.length()==0)
+throw new Exception("需指定保存的配置文件名");
+saveFile(filename);
+}
+
+public void deleteValue(String value){
+p.remove(value);
+}
+
+public static void main(String args[]){
+String file="/eclipse/workspace/NewsTest/WEB-INF/config.properties";
+// String file="D:\\eclipse\\workspace\\NewsTest\\WEB-INF\\config.properties";
+PropertiesUnit pu=new PropertiesUnit(file);
+pu.list();
+}
+
+}
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+public class ReadPropertiesFile ...{
+
+public void readPropertiesFile(String fileName) throws FileNotFoundException ...{
+String str = "";
+Properties prop = new Properties();
+
+InputStream stream = null;
+
+//读取这个类在同一包中的properties文件
+//stream = getClass().getClassLoader().getResourceAsStream(fileName);
+System.out.println("path:" + getClass().getResource(fileName));
+
+
+//读取SRC下的的properties文件
+String path = getClass().getResource("/").getPath();
+stream = new BufferedInputStream(new FileInputStream(new File(path+fileName)));
+
+try ...{
+prop.load(stream);
+str = prop.getProperty("localname");
+System.out.println("localname:" + str);
+System.out.println("properties:" + prop);
+stream.close();
+
+} catch (IOException e) ...{
+// TODO Auto-generated catch block
+e.printStackTrace();
+}
+}
+
+
+public static void main(String[] args) throws FileNotFoundException ...{
+// TODO Auto-generated method stub
+new ReadPropertiesFile().readPropertiesFile("config.properties");
+
+}
+
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+//=================sprin配置文件================================
+<bean
+id="userService"
+class="com.thtf.ezone.ezesb.jmx.admin.service.impl.UserServiceImpl">
+<property
+name="filePath"
+value="config/userInfo.properties" />
+</bean>
+
+//=================java文件================================
+
+package com.thtf.ezone.ezesb.jmx.admin.service.impl;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+public class UserServiceImpl implements UserService {
+
+String filePath = null;
+
+public void setFilePath(String filePath) {
+this.filePath = filePath;
+}
+
+public static void main(String dd[])throws Exception{
+
+Properties p = new Properties();
+FileInputStream ferr=new FileInputStream((getClass().getClassLoader()
+.getResource("") + filePath).toString().substring(6));// 用subString(6)去掉：file:/try{
+p.load(ferr);
+ferr.close();
+Set s = p.keySet();
+Iterator it = s.iterator();
+while(it.hasNext()){
+String id = (String)it.next();
+String value = p.getProperty(id);
+System.out.println(id+":="+value);
+}
+}catch(Exception e){
+e.printStackTrace();
+}
+}
+}
+
+
+
+//==============databaseconfing.properties 文件=====================
+
+#----------------------------------
+# sql server 2000数据厍连接信息
+#----------------------------------
+dp.sd.DataBaseTyp=mssql
+DataBaseHost=127.0.0.1:1433
+DataBase=formpro
+UserName=sa
+PassWord=01
+#----------------------------------
+# mysql 数据厍连接信息
+#----------------------------------
+#DataBaseHost=127.0.0.1:3306
+#DataBaseTyp=mysql
+#DataBase=snow
+#UserName=root
+#PassWord=01
+//==========================运行结果=======================
+
+PassWord:=01
+DataBaseHost:=127.0.0.1:1433
+DataBase:=formpro
+dp.sd.DataBaseTyp:=mssql
+UserName:=sa

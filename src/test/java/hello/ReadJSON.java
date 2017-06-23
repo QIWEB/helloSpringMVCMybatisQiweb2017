@@ -20,12 +20,12 @@ public class ReadJSON {
         	System.out.println(f); 
         	//D:\eclipse-workspace\helloSpringMVCMybatisQiweb2017\target\test-classes
         	//request.getSession().getServletContext().getRealPath("/index.html") ;
-            JsonParser parser=new JsonParser();  //´´½¨JSON½âÎöÆ÷
-            JsonObject object=(JsonObject) parser.parse(new FileReader("D:\\eclipse-workspace\\helloSpringMVCMybatisQiweb2017\\src\\test\\java\\hello\\test.json"));  //´´½¨JsonObject¶ÔÏó
-            System.out.println("cat="+object.get("cat").getAsString()); //½«jsonÊı¾İ×ªÎªÎªStringĞÍµÄÊı¾İ
-            System.out.println("pop="+object.get("pop").getAsBoolean()); //½«jsonÊı¾İ×ªÎªÎªbooleanĞÍµÄÊı¾İ
+            JsonParser parser=new JsonParser();  //åˆ›å»ºJSONè§£æå™¨
+            JsonObject object=(JsonObject) parser.parse(new FileReader("D:\\eclipse-workspace\\helloSpringMVCMybatisQiweb2017\\src\\test\\java\\hello\\test.json"));  //åˆ›å»ºJsonObjectå¯¹è±¡
+            System.out.println("cat="+object.get("cat").getAsString()); //å°†jsonæ•°æ®è½¬ä¸ºä¸ºStringå‹çš„æ•°æ®
+            System.out.println("pop="+object.get("pop").getAsBoolean()); //å°†jsonæ•°æ®è½¬ä¸ºä¸ºbooleanå‹çš„æ•°æ®
             
-            JsonArray array=object.get("language").getAsJsonArray();    //µÃµ½ÎªjsonµÄÊı×é
+            JsonArray array=object.get("language").getAsJsonArray();    //å¾—åˆ°ä¸ºjsonçš„æ•°ç»„
             for(int i=0;i<array.size();i++){
                 System.out.println("---------------");
                 JsonObject subObject=array.get(i).getAsJsonObject();
@@ -33,17 +33,17 @@ public class ReadJSON {
                 System.out.println("name="+subObject.get("name").getAsString());
                 System.out.println("ide="+subObject.get("ide").getAsString());
             }
-            System.out.println("ÏÂÃæÎª×Ô²âÊı¾İ");
-            logger.info("------¿´¿´ÈÕÖ¾ÊÇ²»ÊÇ¼ÇÂ¼³É¹¦ÁË");
-            //ÕâÀï½«json×Ö·û´®×ª»»³Éjson¶ÔÏóÓÃµÄ²»ÊÇgoogleµÄjar
+            System.out.println("ä¸‹é¢ä¸ºè‡ªæµ‹æ•°æ®");
+            logger.info("------çœ‹çœ‹æ—¥å¿—æ˜¯ä¸æ˜¯è®°å½•æˆåŠŸäº†");
+            //è¿™é‡Œå°†jsonå­—ç¬¦ä¸²è½¬æ¢æˆjsonå¯¹è±¡ç”¨çš„ä¸æ˜¯googleçš„jar
             com.alibaba.fastjson.JSONObject jso=com.alibaba.fastjson.JSONObject.parseObject("{name:'zhangsan',age:25}");
-            logger.info(String.format("jsonÄÚÈİ£ºĞÕÃû£º%sÄêÁä£º%d",jso.get("name"),jso.get("age")));
+            logger.info(String.format("jsonå†…å®¹ï¼šå§“åï¼š%så¹´é¾„ï¼š%d",jso.get("name"),jso.get("age")));
             
-            //json ¶ÔÏó»¥×ª
-            Person p =new Person("ÍõÁ¦",69);
+            //json å¯¹è±¡äº’è½¬
+            Person p =new Person("ç‹åŠ›",69);
             net.sf.json.JSONObject objjson=net.sf.json.JSONObject.fromObject(p);
             //objjson.get("name");
-            logger.info(String.format("java¶ÔÏó×ª»»³ÉjsonÄÚÈİ£ºĞÕÃû£º%sÄêÁä£º%d",objjson.get("name"),objjson.get("age")));
+            logger.info(String.format("javaå¯¹è±¡è½¬æ¢æˆjsonå†…å®¹ï¼šå§“åï¼š%så¹´é¾„ï¼š%d",objjson.get("name"),objjson.get("age")));
             
             net.sf.json.JSONObject objjsonb=new net.sf.json.JSONObject();
             objjsonb.put("name", "lisi");
@@ -52,38 +52,38 @@ public class ReadJSON {
 //            System.out.println("==========name:"+p2.getName());
             
             String str=null;  
-            str=String.format("Hi,%s", "ÍõÁ¦");  
+            str=String.format("Hi,%s", "ç‹åŠ›");  
             System.out.println(str);  
-            /*str=String.format("Hi,%s:%s.%s", "ÍõÄÏ","ÍõÁ¦","ÍõÕÅ");            
+            /*str=String.format("Hi,%s:%s.%s", "ç‹å—","ç‹åŠ›","ç‹å¼ ");            
             System.out.println(str);                           
-            System.out.printf("×ÖÄ¸aµÄ´óĞ´ÊÇ£º%c %n", 'A');  
-            System.out.printf("3>7µÄ½á¹ûÊÇ£º%b %n", 3>7);  
-            System.out.printf("100µÄÒ»°ëÊÇ£º%d %n", 100/2);  
-            System.out.printf("100µÄ16½øÖÆÊıÊÇ£º%x %n", 100);  
-            System.out.printf("100µÄ8½øÖÆÊıÊÇ£º%o %n", 100);  
-            System.out.printf("50ÔªµÄÊé´ò8.5ÕÛ¿ÛÊÇ£º%f Ôª%n", 50*0.85);  
-            System.out.printf("ÉÏÃæ¼Û¸ñµÄ16½øÖÆÊıÊÇ£º%a %n", 50*0.85);  
-            System.out.printf("ÉÏÃæ¼Û¸ñµÄÖ¸Êı±íÊ¾£º%e %n", 50*0.85);  
-            System.out.printf("ÉÏÃæ¼Û¸ñµÄÖ¸ÊıºÍ¸¡µãÊı½á¹ûµÄ³¤¶È½Ï¶ÌµÄÊÇ£º%g %n", 50*0.85);  
-            System.out.printf("ÉÏÃæµÄÕÛ¿ÛÊÇ%d%% %n", 85);  
-            System.out.printf("×ÖÄ¸AµÄÉ¢ÁĞÂëÊÇ£º%h %n", 'A');  
+            System.out.printf("å­—æ¯açš„å¤§å†™æ˜¯ï¼š%c %n", 'A');  
+            System.out.printf("3>7çš„ç»“æœæ˜¯ï¼š%b %n", 3>7);  
+            System.out.printf("100çš„ä¸€åŠæ˜¯ï¼š%d %n", 100/2);  
+            System.out.printf("100çš„16è¿›åˆ¶æ•°æ˜¯ï¼š%x %n", 100);  
+            System.out.printf("100çš„8è¿›åˆ¶æ•°æ˜¯ï¼š%o %n", 100);  
+            System.out.printf("50å…ƒçš„ä¹¦æ‰“8.5æŠ˜æ‰£æ˜¯ï¼š%f å…ƒ%n", 50*0.85);  
+            System.out.printf("ä¸Šé¢ä»·æ ¼çš„16è¿›åˆ¶æ•°æ˜¯ï¼š%a %n", 50*0.85);  
+            System.out.printf("ä¸Šé¢ä»·æ ¼çš„æŒ‡æ•°è¡¨ç¤ºï¼š%e %n", 50*0.85);  
+            System.out.printf("ä¸Šé¢ä»·æ ¼çš„æŒ‡æ•°å’Œæµ®ç‚¹æ•°ç»“æœçš„é•¿åº¦è¾ƒçŸ­çš„æ˜¯ï¼š%g %n", 50*0.85);  
+            System.out.printf("ä¸Šé¢çš„æŠ˜æ‰£æ˜¯%d%% %n", 85);  
+            System.out.printf("å­—æ¯Açš„æ•£åˆ—ç æ˜¯ï¼š%h %n", 'A');  
             
             
             
 		    //String str=null;  
-		    //$Ê¹ÓÃ  
-		    str=String.format("¸ñÊ½²ÎÊı$µÄÊ¹ÓÃ£º%1$d,%2$s", 99,"abc");             
+		    //$ä½¿ç”¨  
+		    str=String.format("æ ¼å¼å‚æ•°$çš„ä½¿ç”¨ï¼š%1$d,%2$s", 99,"abc");             
 		    System.out.println(str);                       
-		    //+Ê¹ÓÃ  
-		    System.out.printf("ÏÔÊ¾Õı¸ºÊıµÄ·ûºÅ£º%+dÓë%d%n", 99,-99);  
-		    //²¹OÊ¹ÓÃ  
-		    System.out.printf("×îÅ£µÄ±àºÅÊÇ£º%03d%n", 7);  
-		    //¿Õ¸ñÊ¹ÓÃ  
-		    System.out.printf("Tab¼üµÄĞ§¹ûÊÇ£º% 8d%n", 7);  
-		    //.Ê¹ÓÃ  
-		    System.out.printf("ÕûÊı·Ö×éµÄĞ§¹ûÊÇ£º%,d%n", 9989997);  
-		    //¿Õ¸ñºÍĞ¡ÊıµãºóÃæ¸öÊı  
-		    System.out.printf("Ò»±¾ÊéµÄ¼Û¸ñÊÇ£º% 50.5fÔª%n", 49.8);  */
+		    //+ä½¿ç”¨  
+		    System.out.printf("æ˜¾ç¤ºæ­£è´Ÿæ•°çš„ç¬¦å·ï¼š%+dä¸%d%n", 99,-99);  
+		    //è¡¥Oä½¿ç”¨  
+		    System.out.printf("æœ€ç‰›çš„ç¼–å·æ˜¯ï¼š%03d%n", 7);  
+		    //ç©ºæ ¼ä½¿ç”¨  
+		    System.out.printf("Tabé”®çš„æ•ˆæœæ˜¯ï¼š% 8d%n", 7);  
+		    //.ä½¿ç”¨  
+		    System.out.printf("æ•´æ•°åˆ†ç»„çš„æ•ˆæœæ˜¯ï¼š%,d%n", 9989997);  
+		    //ç©ºæ ¼å’Œå°æ•°ç‚¹åé¢ä¸ªæ•°  
+		    System.out.printf("ä¸€æœ¬ä¹¦çš„ä»·æ ¼æ˜¯ï¼š% 50.5få…ƒ%n", 49.8);  */
         } catch (JsonIOException e) {
             e.printStackTrace();
         } catch (JsonSyntaxException e) {

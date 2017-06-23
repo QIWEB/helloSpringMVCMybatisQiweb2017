@@ -1,0 +1,536 @@
+redis之spring整合redis（maven构建）
+
+pom构建：
+
+ 
+
+    <modelVersion>4.0.0</modelVersion>  
+    <groupId>com.x.redis</groupId>  
+    <artifactId>springredis</artifactId>  
+    <version>0.0.1-SNAPSHOT</version>  
+      
+    <dependencies>  
+        <dependency>  
+            <groupId>org.springframework.data</groupId>  
+            <artifactId>spring-data-redis</artifactId>  
+            <version>1.0.2.RELEASE</version>  
+        </dependency>  
+        <dependency>  
+            <groupId>org.springframework</groupId>  
+            <artifactId>spring-test</artifactId>  
+            <version>3.1.2.RELEASE</version>  
+            <scope>test</scope>  
+        </dependency>  
+          
+        <dependency>  
+            <groupId>redis.clients</groupId>  
+            <artifactId>jedis</artifactId>  
+            <version>2.1.0</version>  
+        </dependency>  
+          
+         <dependency>  
+            <groupId>junit</groupId>  
+            <artifactId>junit</artifactId>  
+            <version>4.8.2</version>  
+            <scope>test</scope>  
+        </dependency>  
+    </dependencies>  
+
+
+spring配置文件(applicationContext.xml)：
+
+ 
+
+    <?xml version="1.0" encoding="UTF-8"?>  
+    <beans xmlns="http://www.springframework.org/schema/beans"  
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"  
+        xmlns:context="http://www.springframework.org/schema/context"  
+        xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"  
+        xmlns:aop="http://www.springframework.org/schema/aop"  
+        xsi:schemaLocation="  
+                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">  
+      
+        <context:property-placeholder location="classpath:redis.properties" />  
+      
+        <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">  
+            <property name="maxIdle" value="${redis.maxIdle}" />  
+            <property name="maxActive" value="${redis.maxActive}" />  
+            <property name="maxWait" value="${redis.maxWait}" />  
+            <property name="testOnBorrow" value="${redis.testOnBorrow}" />  
+        </bean>  
+          
+        <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"  
+            p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.pass}"  p:pool-config-ref="poolConfig"/>  
+          
+        <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">  
+            <property name="connectionFactory"   ref="connectionFactory" />  
+        </bean>         
+          
+        <bean id="userDao" class="com.x.dao.impl.UserDao" />   
+    </beans>  
+
+redis.properties
+
+ 
+
+ 
+
+    # Redis settings  
+    redis.host=localhost  
+    redis.port=6379  
+    redis.pass=java2000_wl  
+      
+      
+    redis.maxIdle=300  
+    redis.maxActive=600  
+    redis.maxWait=1000  
+    redis.testOnBorrow=true  
+
+ 
+
+Java代码：
+
+ 
+
+    package com.x.entity;  
+      
+    import java.io.Serializable;  
+      
+    /**  
+     * @author http://blog.csdn.net/java2000_wl  
+     * @version <b>1.0</b>  
+     */   
+    public class User implements Serializable {  
+          
+        private static final long serialVersionUID = -6011241820070393952L;  
+      
+        private String id;  
+          
+        private String name;  
+          
+        private String password;  
+      
+        /** 
+         * <br>------------------------------<br> 
+         */  
+        public User() {  
+              
+        }  
+          
+        /** 
+         * <br>------------------------------<br> 
+         */  
+        public User(String id, String name, String password) {  
+            super();  
+            this.id = id;  
+            this.name = name;  
+            this.password = password;  
+        }  
+      
+        /** 
+         * 获得id 
+         * @return the id 
+         */  
+        public String getId() {  
+            return id;  
+        }  
+      
+        /** 
+         * 设置id 
+         * @param id the id to set 
+         */  
+        public void setId(String id) {  
+            this.id = id;  
+        }  
+      
+        /** 
+         * 获得name 
+         * @return the name 
+         */  
+        public String getName() {  
+            return name;  
+        }  
+      
+        /** 
+         * 设置name 
+         * @param name the name to set 
+         */  
+        public void setName(String name) {  
+            this.name = name;  
+        }  
+      
+        /** 
+         * 获得password 
+         * @return the password 
+         */  
+        public String getPassword() {  
+            return password;  
+        }  
+      
+        /** 
+         * 设置password 
+         * @param password the password to set 
+         */  
+        public void setPassword(String password) {  
+            this.password = password;  
+        }  
+    }  
+
+    package com.redis.dom.dao;  
+      
+    import org.springframework.beans.factory.annotation.Autowired;  
+    import org.springframework.data.redis.core.RedisTemplate;  
+    import org.springframework.data.redis.serializer.RedisSerializer;  
+      
+    /**  
+     * AbstractBaseRedisDao 
+     * @author http://blog.csdn.net/java2000_wl  
+     * @version <b>1.0</b>  
+     */   
+    public abstract class AbstractBaseRedisDao<K, V> {  
+          
+        @Autowired  
+        protected RedisTemplate<K, V> redisTemplate;  
+      
+        /** 
+         * 设置redisTemplate 
+         * @param redisTemplate the redisTemplate to set 
+         */  
+        public void setRedisTemplate(RedisTemplate<K, V> redisTemplate) {  
+            this.redisTemplate = redisTemplate;  
+        }  
+          
+        /** 
+         * 获取 RedisSerializer 
+         * <br>------------------------------<br> 
+         */  
+        protected RedisSerializer<String> getRedisSerializer() {  
+            return redisTemplate.getStringSerializer();  
+        }  
+    }  
+
+    package com.x.dao;  
+      
+    import java.util.List;  
+      
+    import com.x.entity.User;  
+      
+    /**  
+     * @author http://blog.csdn.net/java2000_wl  
+     * @version <b>1.0</b>  
+     */   
+    public interface IUserDao {  
+          
+        /** 
+         * 新增 
+         * <br>------------------------------<br> 
+         * @param user 
+         * @return 
+         */  
+        boolean add(User user);  
+          
+        /** 
+         * 批量新增 使用pipeline方式 
+         * <br>------------------------------<br> 
+         * @param list 
+         * @return 
+         */  
+        boolean add(List<User> list);  
+          
+        /** 
+         * 删除 
+         * <br>------------------------------<br> 
+         * @param key 
+         */  
+        void delete(String key);  
+          
+        /** 
+         * 删除多个 
+         * <br>------------------------------<br> 
+         * @param keys 
+         */  
+        void delete(List<String> keys);  
+          
+        /** 
+         * 修改 
+         * <br>------------------------------<br> 
+         * @param user 
+         * @return  
+         */  
+        boolean update(User user);  
+      
+        /** 
+         * 通过key获取 
+         * <br>------------------------------<br> 
+         * @param keyId 
+         * @return  
+         */  
+        User get(String keyId);  
+    }  
+
+    package com.x.dao.impl;  
+      
+    import java.util.ArrayList;  
+    import java.util.List;  
+      
+    import org.springframework.dao.DataAccessException;  
+    import org.springframework.data.redis.connection.RedisConnection;  
+    import org.springframework.data.redis.core.RedisCallback;  
+    import org.springframework.data.redis.serializer.RedisSerializer;  
+    import org.springframework.util.Assert;  
+      
+    import com.x.dao.AbstractBaseRedisDao;  
+    import com.x.dao.IUserDao;  
+    import com.x.entity.User;  
+      
+    /**  
+     * Dao 
+     * @author http://blog.csdn.net/java2000_wl  
+     * @version <b>1.0</b>  
+     */   
+    public class UserDao extends AbstractBaseRedisDao<String, User> implements IUserDao {  
+      
+        /**  
+         * 新增 
+         *<br>------------------------------<br> 
+         * @param user 
+         * @return 
+         */  
+        public boolean add(final User user) {  
+            boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {  
+                public Boolean doInRedis(RedisConnection connection)  
+                        throws DataAccessException {  
+                    RedisSerializer<String> serializer = getRedisSerializer();  
+                    byte[] key  = serializer.serialize(user.getId());  
+                    byte[] name = serializer.serialize(user.getName());  
+                    return connection.setNX(key, name);  
+                }  
+            });  
+            return result;  
+        }  
+          
+        /** 
+         * 批量新增 使用pipeline方式   
+         *<br>------------------------------<br> 
+         *@param list 
+         *@return 
+         */  
+        public boolean add(final List<User> list) {  
+            Assert.notEmpty(list);  
+            boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {  
+                public Boolean doInRedis(RedisConnection connection)  
+                        throws DataAccessException {  
+                    RedisSerializer<String> serializer = getRedisSerializer();  
+                    for (User user : list) {  
+                        byte[] key  = serializer.serialize(user.getId());  
+                        byte[] name = serializer.serialize(user.getName());  
+                        connection.setNX(key, name);  
+                    }  
+                    return true;  
+                }  
+            }, false, true);  
+            return result;  
+        }  
+          
+        /**  
+         * 删除 
+         * <br>------------------------------<br> 
+         * @param key 
+         */  
+        public void delete(String key) {  
+            List<String> list = new ArrayList<String>();  
+            list.add(key);  
+            delete(list);  
+        }  
+      
+        /** 
+         * 删除多个 
+         * <br>------------------------------<br> 
+         * @param keys 
+         */  
+        public void delete(List<String> keys) {  
+            redisTemplate.delete(keys);  
+        }  
+      
+        /** 
+         * 修改  
+         * <br>------------------------------<br> 
+         * @param user 
+         * @return  
+         */  
+        public boolean update(final User user) {  
+            String key = user.getId();  
+            if (get(key) == null) {  
+                throw new NullPointerException("数据行不存在, key = " + key);  
+            }  
+            boolean result = redisTemplate.execute(new RedisCallback<Boolean>() {  
+                public Boolean doInRedis(RedisConnection connection)  
+                        throws DataAccessException {  
+                    RedisSerializer<String> serializer = getRedisSerializer();  
+                    byte[] key  = serializer.serialize(user.getId());  
+                    byte[] name = serializer.serialize(user.getName());  
+                    connection.set(key, name);  
+                    return true;  
+                }  
+            });  
+            return result;  
+        }  
+      
+        /**  
+         * 通过key获取 
+         * <br>------------------------------<br> 
+         * @param keyId 
+         * @return 
+         */  
+        public User get(final String keyId) {  
+            User result = redisTemplate.execute(new RedisCallback<User>() {  
+                public User doInRedis(RedisConnection connection)  
+                        throws DataAccessException {  
+                    RedisSerializer<String> serializer = getRedisSerializer();  
+                    byte[] key = serializer.serialize(keyId);  
+                    byte[] value = connection.get(key);  
+                    if (value == null) {  
+                        return null;  
+                    }  
+                    String name = serializer.deserialize(value);  
+                    return new User(keyId, name, null);  
+                }  
+            });  
+            return result;  
+        }  
+    }  
+
+    import java.util.ArrayList;  
+    import java.util.List;  
+      
+    import junit.framework.Assert;  
+      
+    import org.junit.Test;  
+    import org.springframework.beans.factory.annotation.Autowired;  
+    import org.springframework.test.context.ContextConfiguration;  
+    import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;  
+      
+    import com.x.dao.IUserDao;  
+    import com.x.entity.User;  
+      
+    /**  
+     * 测试 
+     * @author http://blog.csdn.net/java2000_wl  
+     * @version <b>1.0</b>  
+     */    
+    @ContextConfiguration(locations = {"classpath*:applicationContext.xml"})  
+    public class RedisTest extends AbstractJUnit4SpringContextTests {  
+          
+        @Autowired  
+        private IUserDao userDao;  
+          
+        /** 
+         * 新增 
+         * <br>------------------------------<br> 
+         */  
+        @Test  
+        public void testAddUser() {  
+            User user = new User();  
+            user.setId("user1");  
+            user.setName("java2000_wl");  
+            boolean result = userDao.add(user);  
+            Assert.assertTrue(result);  
+        }  
+          
+        /** 
+         * 批量新增 普通方式 
+         * <br>------------------------------<br> 
+         */  
+        @Test  
+        public void testAddUsers1() {  
+            List<User> list = new ArrayList<User>();  
+            for (int i = 10; i < 50000; i++) {  
+                User user = new User();  
+                user.setId("user" + i);  
+                user.setName("java2000_wl" + i);  
+                list.add(user);  
+            }  
+            long begin = System.currentTimeMillis();  
+            for (User user : list) {  
+                userDao.add(user);  
+            }  
+            System.out.println(System.currentTimeMillis() -  begin);  
+        }  
+          
+        /** 
+         * 批量新增 pipeline方式 
+         * <br>------------------------------<br> 
+         */  
+        @Test  
+        public void testAddUsers2() {  
+            List<User> list = new ArrayList<User>();  
+            for (int i = 10; i < 1500000; i++) {  
+                User user = new User();  
+                user.setId("user" + i);  
+                user.setName("java2000_wl" + i);  
+                list.add(user);  
+            }  
+            long begin = System.currentTimeMillis();  
+            boolean result = userDao.add(list);  
+            System.out.println(System.currentTimeMillis() - begin);  
+            Assert.assertTrue(result);  
+        }  
+          
+        /** 
+         * 修改 
+         * <br>------------------------------<br> 
+         */  
+        @Test  
+        public void testUpdate() {  
+            User user = new User();  
+            user.setId("user1");  
+            user.setName("new_password");  
+            boolean result = userDao.update(user);  
+            Assert.assertTrue(result);  
+        }  
+          
+        /** 
+         * 通过key删除单个 
+         * <br>------------------------------<br> 
+         */  
+        @Test  
+        public void testDelete() {  
+            String key = "user1";  
+            userDao.delete(key);  
+        }  
+          
+        /** 
+         * 批量删除 
+         * <br>------------------------------<br> 
+         */  
+        @Test  
+        public void testDeletes() {  
+            List<String> list = new ArrayList<String>();  
+            for (int i = 0; i < 10; i++) {  
+                list.add("user" + i);  
+            }  
+            userDao.delete(list);  
+        }  
+          
+        /** 
+         * 获取 
+         * <br>------------------------------<br> 
+         */  
+        @Test  
+        public void testGetUser() {  
+            String id = "user1";  
+            User user = userDao.get(id);  
+            Assert.assertNotNull(user);  
+            Assert.assertEquals(user.getName(), "java2000_wl");  
+        }  
+      
+        /** 
+         * 设置userDao 
+         * @param userDao the userDao to set 
+         */  
+        public void setUserDao(IUserDao userDao) {  
+            this.userDao = userDao;  
+        }  
+    }  
+
