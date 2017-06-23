@@ -1,0 +1,599 @@
+
+项目文档管理系统： 个人工作台 邮箱和rtx
+http://rdms.sh-stt.com/authorize.do?method=login
+zhangqi
+!QAZ2wsx
+
+已开通张奇的RDMS账号。
+ 
+张奇，你可以用与邮箱相同的账号（用户名/密码）通过如下方式登陆RDMS平台：
+通过内网： http://192.168.0.224:8080/
+http://qc.stt.com/
+通过外网： www.sh-stt.com,   点击“登陆管理平台”
+
+   更详细的规定请登录公司\\192.168.0.20  《公开信息》 文件夹
+   
+   
+   用户类型和权限	在用户管理中配置用户所属角色，在角色中配置用户所具备的权限。
+   
+   \\192.168.0.20\公开信息
+   
+上网认证：
+http://10.10.10.18:90/login
+通用账号
+   
+   RTX 客户端服务器配置
+   rtx.sh-stt.com 端口：8000
+   预支充值服务产品系统和移动运营商计费系统，业务系统与客服系统以松耦合的方式对接，数据接口应遵循运营商数据系统标准；新增信用账本或信用项信息数据格式和运营商计费系统接口标准一致。
+预支充值服务的软件平台遵循Java EE（Java Platform, Enterprise Edition）标准，应用系统架构采用SpringMVC 框架：软件设计采用标准四层架构设计：用户界面层、业务逻辑层、服务层、数据访问层，底层连接系统数据库系统，保存和获取业务数据。数据库用开源数据库MySQL 5.x；　
+数据模型用R语言开发并和软件系统集成。
+
+DCO
+BCSS
+   
+   上海全成通信技术有限公司
+   预支充值(DCO)产品开发项目立项报告
+   预支充值服务软件系统的核心是数据模型开发，标准信用评分模型和电信预支付卡用户画像理论成熟
+   
+   但之前我们已有成功项目的积累，我们可以现在运行项目的数据来训练，校正，检测我们的模型，可以一定情况降低风险。在新项目实施过程中，可以通过初期控制用户数量，适当控制信用额度等方式控制项目坏账率，降低项目风险。
+   
+   共享文件服务器：\\192.168.0.115
+   
+1 Gerrit简介
+
+    Gerrit，一种免费、开放源代码的代码审查软件，使用网页界面。利用网页浏览器，同一个团队的软件程序员，可以相互审阅彼此修改后的程序代码，决定是否能够提交，退回或者继续修改。  
+   Gerrit配置
+   
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDKNvZ8AZR3VuGDu9E/9QkxlfRCMTPDmT91Yxjy/5n14BWYRRMsQVN16eRxf6XxeyHKGuI/VqRtDbfIteisEVGvtRjagTuKunioXSWbLB/7e6X5BJgNRcejCiwnBmADwJQ93Dr6Z/pnWfPCIODd1cdQeYkuBgFhd5+KyWfVw+g3FQ== RSA-1024
+   
+ 
+代码review  
+1.进入http://192.168.1.130,点击右上角Sign in 登录
+2.点击右上角用户名->Settings->Contact Informations->添加邮箱->Register New Email…。之后注册邮箱会收到邮件，点击邮件中的链接完成注册。
+   Annotation.
+   ApplicationContext ctx = new ClassPathXmlApplicationContext("/configs/spring-task.xml"); 
+   
+
+C:\Users\zhangqi>ipconfig
+
+Windows IP 配置
+
+
+以太网适配器 以太网:
+
+   连接特定的 DNS 后缀 . . . . . . . :
+   本地链接 IPv6 地址. . . . . . . . : fe80::880f:4f12:7613:2cd1%7d
+   IPv4 地址 . . . . . . . . . . . . : 192.168.0.177
+   子网掩码  . . . . . . . . . . . . : 255.255.254.0
+   默认网关. . . . . . . . . . . . . : 192.168.0.1
+   
+redis下载
+https://github.com/ServiceStack/redis-windows
+文件名 	简要
+redis-benchmark.exe 	基准测试
+redis-check-aof.exe 	aof
+redischeck-dump.exe 	dump
+redis-cli.exe 	客户端
+redis-server.exe 	服务器
+redis.windows.conf 	配置文件
+然后编辑redis.windows.conf文件，我看网上有的教程说编辑里边maxheap <bytes> ,但是3.x版本以后，修改的是 maxmemory <bytes>, bytes是字节，请自行换算，我这里改成maxmemory 1024000000。
+
+其实这个地方可以不用设置，他描述上已经说了，redis会自动设置的。
+.
+
+设置redis的密码：找到# requirepass foobared 改为 requirepass 我的密码 ，本机测试可不设置。
+
+保存后打开redis的解压目录，shift+鼠标左键找到菜单上：在此处打开命令行窗口 或 自行运行cmd命令到此目录
+
+命令如下：
+
+
+redis-server.exe redis.windows.conf --maxmemory 200M
+
+其中--maxmemory 200M是选填的，如果你配置文件redis.windows.conf中配置，这个就可以省去，如果没配置，这个可以加也可以不加，你开心就好。
+
+最后说一下将redis加到Windows服务中。首先还是要启动redis服务器端，然后在运行redis客户端，然后通过Windows的service-install命令，输入
+
+redis-server --service-install redis.windows.conf --loglevel verbose  
+
+
+mongo配置
+mongod --dbpath=D:\MongoDB34-data\db --logpath=D:/MongoDB34-data/logs/mongodb.log
+   
+   
+采用FTP/SFTP协议文件接口方式   
+BCSS-用户需求说明书.doc
+重庆联通预支付充值服务技术规范v1.3.doc
+
+预付费只是一种计费结算的方式，在计费中心提前做计费。预交费知识在使用前在卡内预存进去的。也包括你是用的业务是先要从你的账户内扣除的一种计费方式。先交钱后使用。还有一种后付费，先使用后付费~
+   
+SSM框架——使用MyBatis Generator自动创建代码 
+本文地址：
+http://blog.csdn.net/zhshulin/article/details/23912615
+
+   
+===============================================任务说明==================================   
+******************************** 2017年6月19日 任务说明：
+培训耗时：2.0小时
+    学习《入职培训(行政管理规章制度)-人力资源部.ppt》
+和了解了《公司介绍与企业文化-人力资源部.pptx》
+并完成了“新员工入职培训试题”已交冉亚玲
+
+开发工具安装BCSS需求文档阅读，耗时：4.5小时
+    安装开发工具包括：git ，eclipse，maven，navicat for mysql等。
+了解唐雅丽发的《BCSS-用户需求说明书.doc》需求文档了解项目。
+
+******************************** 2017年6月20日 任务说明：
+
+
+maven+spring+spring mvc+mybatis
+http://blog.csdn.net/niu_hao/article/details/25250213
+http://breezylee.iteye.com/blog/1993003	
+.http://www.cnblogs.com/cczz_11/p/4363314.html
+http://blog.csdn.net/w1053288979/article/details/8836967
+http://search.maven.org/#artifactdetails%7Corg.apache.directory.studio%7Corg.apache.commons.io%7C2.4%7Cjar
+Maven的安装使用以及 Maven+Spring hello world example	
+http://www.cnblogs.com/huaizuo/p/4920308.html
+
+参考资料
+
+关于Maven的介绍
+
+http://www.cnblogs.com/xing901022/p/4170248.html
+如何安装Maven
+
+http://dead-knight.iteye.com/blog/1841658
+如何用Maven下载jar
+
+http://liukai.iteye.com/blog/973120
+如何运行一个Maven的web项目
+
+http://flashdream8.iteye.com/blog/1910092
+关于spring
+
+http://www.importnew.com/13246.html 
+
+基于Ftp/Sftp协议的文件服务器数据传输
+http://lpyyn.iteye.com/blog/2065149
+http://blog.csdn.net/gebitan505/article/details/44455235/
+SSM框架——详细整合教程（Spring+SpringMVC+MyBatis） 
+
+
+
+Navicat for MySQL 注册码
+名称和组织不用填写
+
+NAVH-WK6A-DMVK-DKW3
+
+mybatis_mysql生成代码.bat
+Java -jar mybatis-generator-core-1.3.2.jar -configfile generatorConfig.xml -overwrite
+
+
+同传统的拉(PULL)技术相比,最主要的区别在于推送(PUSH)技术...
+
+
+http://www.pramati.com/download/eclipse/updates/content.xml
+
+     不要用git pull，用git fetch和git merge代替它。 
+
+git pull的问题是它把过程的细节都隐藏了起来，以至于你不用去了解git中各种类型分支的区别和使用方法。当然，多数时候这是没问题的，但一旦代码有问题，你很难找到出错的地方。看起来git pull的用法会使你吃惊，简单看一下git的使用文档应该就能说服你。
+
+将下载（fetch）和合并（merge）放到一个命令里的另外一个弊端是，你的本地工作目录在未经确认的情况下就会被远程分支更新。当然，除非你关闭所有的安全选项，否则git pull在你本地工作目录还不至于造成不可挽回的损失，但很多时候我们宁愿做的慢一些，也不愿意返工重来。 
+
+
+
+MongoDB常用操作命令大全
+
+作者： 字体：[增加 减小] 类型：转载 时间：2014-03-18 我要评论
+成功启动MongoDB后，再打开一个命令行窗口输入mongo，就可以进行数据库的一些操作。输入help可以看到基本操作命令，只是MongoDB没有创建数据库的命令，但有类似的命令
+
+如：如果你想创建一个“myTest”的数据库，先运行use myTest命令，之后就做一些操作（如：db.createCollection('user')）,这样就可以创建一个名叫“myTest”的数据库。
+
+一、数据库常用命令
+1、Help查看命令提示
+复制代码 代码如下:
+help
+db.help();
+db.yourColl.help();
+db.youColl.find().help();
+rs.help();
+
+2、切换/创建数据库
+复制代码 代码如下:
+use yourDB; 当创建一个集合(table)的时候会自动创建当前数据库
+
+3、查询所有数据库
+复制代码 代码如下:
+show dbs;
+
+4、删除当前使用数据库
+复制代码 代码如下:
+db.dropDatabase();
+
+5、从指定主机上克隆数据库
+复制代码 代码如下:
+db.cloneDatabase(“127.0.0.1”); 将指定机器上的数据库的数据克隆到当前数据库
+
+6、从指定的机器上复制指定数据库数据到某个数据库
+复制代码 代码如下:
+db.copyDatabase("mydb", "temp", "127.0.0.1");将本机的mydb的数据复制到temp数据库中
+
+7、修复当前数据库
+复制代码 代码如下:
+db.repairDatabase();
+
+8、查看当前使用的数据库
+复制代码 代码如下:
+db.getName();
+db; db和getName方法是一样的效果，都可以查询当前使用的数据库
+
+9、显示当前db状态
+复制代码 代码如下:
+db.stats();
+
+10、当前db版本
+复制代码 代码如下:
+db.version();
+
+11、查看当前db的链接机器地址
+复制代码 代码如下:
+db.getMongo();
+
+二、Collection聚集集合
+1、创建一个聚集集合（table）
+复制代码 代码如下:
+db.createCollection(“collName”, {size: 20, capped: 5, max: 100});//创建成功会显示{“ok”:1}
+//判断集合是否为定容量db.collName.isCapped();
+
+2、得到指定名称的聚集集合（table）
+复制代码 代码如下:
+db.getCollection("account");
+
+3、得到当前db的所有聚集集合
+复制代码 代码如下:
+db.getCollectionNames();
+
+4、显示当前db所有聚集索引的状态
+复制代码 代码如下:
+db.printCollectionStats();
+
+三、用户相关
+1、添加一个用户
+复制代码 代码如下:
+mongodb 添加用户报错TypeError:db.addUser is not a f..._第七城市
+2016年2月25日 - 原因是 新版的mongodb已经不支持addUser方法了。 
+改成createUser了。 使用方法如下... mongodb 添加用户报错TypeError:db.addUser is not a function2...
+db.addUser("name");
+db.addUser("userName", "pwd123", true); 添加用户、设置密码、是否只读
+
+2、数据库认证、安全模式
+复制代码 代码如下:
+db.auth("userName", "123123");
+
+3、显示当前所有用户
+复制代码 代码如下:
+show users;
+
+4、删除用户
+复制代码 代码如下:
+db.removeUser("userName");
+
+四、聚集集合查询
+1、查询所有记录
+复制代码 代码如下:
+db.userInfo.find();
+相当于：select* from userInfo;
+
+默认每页显示20条记录，当显示不下的情况下，可以用it迭代命令查询下一页数据。注意：键入it命令不能带“；”
+但是你可以设置每页显示数据的大小，用DBQuery.shellBatchSize= 50;这样每页就显示50条记录了。
+2、查询去掉后的当前聚集集合中的某列的重复数据
+复制代码 代码如下:
+db.userInfo.distinct("name");
+会过滤掉name中的相同数据
+相当于：select distict name from userInfo;
+
+3、查询age = 22的记录
+复制代码 代码如下:
+db.userInfo.find({"age": 22});
+相当于： select * from userInfo where age = 22;
+
+4、查询age > 22的记录
+复制代码 代码如下:
+db.userInfo.find({age: {$gt: 22}});
+相当于：select * from userInfo where age >22;
+
+5、查询age < 22的记录
+复制代码 代码如下:
+db.userInfo.find({age: {$lt: 22}});
+相当于：select * from userInfo where age <22;
+
+6、查询age >= 25的记录
+复制代码 代码如下:
+db.userInfo.find({age: {$gte: 25}});
+相当于：select * from userInfo where age >= 25;
+
+7、查询age <= 25的记录
+复制代码 代码如下:
+db.userInfo.find({age: {$lte: 25}});
+
+8、查询age >= 23 并且 age <= 26
+复制代码 代码如下:
+db.userInfo.find({age: {$gte: 23, $lte: 26}});
+
+9、查询name中包含 mongo的数据
+复制代码 代码如下:
+db.userInfo.find({name: /mongo/});D
+//相当于%%
+[code]select * from userInfo where name like ‘%mongo%';
+
+10、查询name中以mongo开头的
+复制代码 代码如下:
+db.userInfo.find({name: /^mongo/});
+select * from userInfo where name like ‘mongo%';
+
+11、查询指定列name、age数据
+复制代码 代码如下:
+db.userInfo.find({}, {name: 1, age: 1});
+相当于：select name, age from userInfo;
+
+当然name也可以用true或false,当用ture的情况下河name:1效果一样，如果用false就是排除name，显示name以外的列信息。
+12、查询指定列name、age数据, age > 25
+复制代码 代码如下:
+db.userInfo.find({age: {$gt: 25}}, {name: 1, age: 1});
+相当于：select name, age from userInfo where age >25;
+
+13、按照年龄排序
+复制代码 代码如下:
+升序：db.userInfo.find().sort({age: 1});
+降序：db.userInfo.find().sort({age: -1});
+
+14、查询name = zhangsan, age = 22的数据
+复制代码 代码如下:
+db.userInfo.find({name: 'zhangsan', age: 22});
+相当于：select * from userInfo where name = ‘zhangsan' and age = ‘22';
+
+15、查询前5条数据
+复制代码 代码如下:
+db.userInfo.find().limit(5);
+相当于：selecttop 5 * from userInfo;
+
+16、查询10条以后的数据
+复制代码 代码如下:
+db.userInfo.find().skip(10);
+相当于：select * from userInfo where id not in (
+selecttop 10 * from userInfo
+);
+
+17、查询在5-10之间的数据
+复制代码 代码如下:
+db.userInfo.find().limit(10).skip(5);
+
+可用于分页，limit是pageSize，skip是第几页*pageSize
+18、or与 查询
+复制代码 代码如下:
+db.userInfo.find({$or: [{age: 22}, {age: 25}]});
+相当于：select * from userInfo where age = 22 or age = 25;
+
+19、查询第一条数据
+复制代码 代码如下:
+db.userInfo.findOne();
+相当于：selecttop 1 * from userInfo;
+db.userInfo.find().limit(1);
+
+20、查询某个结果集的记录条数
+复制代码 代码如下:
+db.userInfo.find({age: {$gte: 25}}).count();
+相当于：select count(*) from userInfo where age >= 20;
+
+21、按照某列进行排序
+复制代码 代码如下:
+db.userInfo.find({sex: {$exists: true}}).count();
+相当于：select count(sex) from userInfo;
+
+五、索引
+1、创建索引
+复制代码 代码如下:
+db.userInfo.ensureIndex({name: 1});
+db.userInfo.ensureIndex({name: 1, ts: -1});
+
+2、查询当前聚集集合所有索引
+复制代码 代码如下:
+db.userInfo.getIndexes();
+
+3、查看总索引记录大小
+复制代码 代码如下:
+db.userInfo.totalIndexSize();
+
+4、读取当前集合的所有index信息
+复制代码 代码如下:
+db.users.reIndex();
+
+5、删除指定索引
+复制代码 代码如下:
+db.users.dropIndex("name_1");
+
+6、删除所有索引索引
+复制代码 代码如下:
+db.users.dropIndexes();
+
+六、修改、添加、删除集合数据
+1、添加
+复制代码 代码如下:
+db.users.save({name: ‘zhangsan', age: 25, sex: true});
+
+添加的数据的数据列，没有固定，根据添加的数据为准
+2、修改
+复制代码 代码如下:
+db.users.update({age: 25}, {$set: {name: 'changeName'}}, false, true);
+相当于：update users set name = ‘changeName' where age = 25;
+db.users.update({name: 'Lisi'}, {$inc: {age: 50}}, false, true);
+相当于：update users set age = age + 50 where name = ‘Lisi';
+db.users.update({name: 'Lisi'}, {$inc: {age: 50}, $set: {name: 'hoho'}}, false, true);
+相当于：update users set age = age + 50, name = ‘hoho' where name = ‘Lisi';
+
+3、删除
+复制代码 代码如下:
+db.users.remove({age: 132});
+
+4、查询修改删除
+复制代码 代码如下:
+db.users.findAndModify({
+    query: {age: {$gte: 25}},
+    sort: {age: -1},
+    update: {$set: {name: 'a2'}, $inc: {age: 2}},
+    remove: true
+});
+db.runCommand({ findandmodify : "users",
+    query: {age: {$gte: 25}},
+    sort: {age: -1},
+    update: {$set: {name: 'a2'}, $inc: {age: 2}},
+    remove: true
+});
+
+update 或 remove 其中一个是必须的参数; 其他参数可选。
+参数    详解     默认值
+query    查询过滤条件    {}
+sort    如果多个文档符合查询过滤条件，将以该参数指定的排列方式选择出排在首位的对象，该对象将被操作    {}
+remove    若为true，被选中对象将在返回前被删除    N/A
+update    一个 修改器对象
+N/A
+new    若为true，将返回修改后的对象而不是原始对象。在删除操作中，该参数被忽略。    false
+fields    参见Retrieving a Subset of Fields (1.5.0+)
+All fields
+upsert    创建新对象若查询结果为空。 示例 (1.5.4+)
+false
+七、语句块操作
+1、简单Hello World
+复制代码 代码如下:
+print("Hello World!");
+
+这种写法调用了print函数，和直接写入"Hello World!"的效果是一样的；
+2、将一个对象转换成json
+复制代码 代码如下:
+tojson(new Object());
+tojson(new Object('a'));
+
+3、循环添加数据
+复制代码 代码如下:
+> for (var i = 0; i < 30; i++) {
+... db.users.save({name: "u_" + i, age: 22 + i, sex: i % 2});
+... };
+
+这样就循环添加了30条数据，同样也可以省略括号的写法
+复制代码 代码如下:
+> for (var i = 0; i < 30; i++) db.users.save({name: "u_" + i, age: 22 + i, sex: i % 2});
+
+也是可以的，当你用db.users.find()查询的时候，显示多条数据而无法一页显示的情况下，可以用it查看下一页的信息；
+4、find 游标查询
+复制代码 代码如下:
+>var cursor = db.users.find();
+> while (cursor.hasNext()) {
+    printjson(cursor.next());
+}
+
+这样就查询所有的users信息，同样可以这样写
+复制代码 代码如下:
+var cursor = db.users.find();
+while (cursor.hasNext()) { printjson(cursor.next); }
+
+同样可以省略{}号
+5、forEach迭代循环
+复制代码 代码如下:
+db.users.find().forEach(printjson);
+
+forEach中必须传递一个函数来处理每条迭代的数据信息
+6、将find游标当数组处理
+复制代码 代码如下:
+var cursor = db.users.find();
+cursor[4];
+
+取得下标索引为4的那条数据
+既然可以当做数组处理，那么就可以获得它的长度：cursor.length();或者cursor.count();
+那样我们也可以用循环显示数据
+复制代码 代码如下:
+for (var i = 0, len = c.length(); i < len; i++) printjson(c[i]);
+
+7、将find游标转换成数组
+复制代码 代码如下:
+> var arr = db.users.find().toArray();
+> printjson(arr[2]);
+
+用toArray方法将其转换为数组
+8、定制我们自己的查询结果
+只显示age <= 28的并且只显示age这列数据
+复制代码 代码如下:
+db.users.find({age: {$lte: 28}}, {age: 1}).forEach(printjson);
+db.users.find({age: {$lte: 28}}, {age: true}).forEach(printjson);
+
+排除age的列
+复制代码 代码如下:
+db.users.find({age: {$lte: 28}}, {age: false}).forEach(printjson);
+
+9、forEach传递函数显示信息
+复制代码 代码如下:
+db.things.find({x:4}).forEach(function(x) {print(tojson(x));});
+
+八、其他
+1、查询之前的错误信息
+复制代码 代码如下:
+db.getPrevError();
+
+2、清除错误记录
+复制代码 代码如下:
+db.resetError();
+
+查看聚集集合基本信息
+1、查看帮助  db.yourColl.help();
+2、查询当前集合的数据条数  db.yourColl.count();
+3、查看数据空间大小 db.userInfo.dataSize();
+4、得到当前聚集集合所在的db db.userInfo.getDB();
+5、得到当前聚集的状态 db.userInfo.stats();
+6、得到聚集集合总大小 db.userInfo.totalSize();
+7、聚集集合储存空间大小 db.userInfo.storageSize();
+8、Shard版本信息  db.userInfo.getShardVersion()
+9、聚集集合重命名 db.userInfo.renameCollection("users"); 将userInfo重命名为users
+10、删除当前聚集集合 db.userInfo.drop();
+
+复制代码 代码如下:
+show dbs:显示数据库列表
+show collections：显示当前数据库中的集合（类似关系数据库中的表）
+show users：显示用户
+use <db name>：切换当前数据库，这和MS-SQL里面的意思一样
+db.help()：显示数据库操作命令，里面有很多的命令
+db.foo.help()：显示集合操作命令，同样有很多的命令，foo指的是当前数据库下，一个叫foo的集合，并非真正意义上的命令
+db.foo.find()：对于当前数据库中的foo集合进行数据查找（由于没有条件，会列出所有数据）
+db.foo.find( { a : 1 } )：对于当前数据库中的foo集合进行查找，条件是数据中有一个属性叫a，且a的值为1
+
+您可能感兴趣的文章:
+
+用ScriptEngine在java中和javascript交互的例子（JDK6新特性）
+
+ Java开发中的23种设计模式详解(转)
+
+设计模式（Design Patterns）
+
+                                  ——可复用面向对象软件的基础
+
+设计模式（Design pattern）是一套被反复使用、多数人知晓的、经过分类编目的、代码设计经验的总结。使用设计模式是为了可重用代码、让代码更容易被他人理解、保证代码可靠性。 毫无疑问，设计模式于己于他人于系统都是多赢的，设计模式使代码编制真正工程化，设计模式是软件工程的基石，如同大厦的一块块砖石一样。项目中合理的运用设计模式可以完美的解决很多问题，每种模式在现在中都有相应的原理来与之对应，每一个模式描述了一个在我们周围不断重复发生的问题，以及该问题的核心解决方案，这也是它能被广泛应用的原因。本章系Java之美[从菜鸟到高手演变]系列之设计模式，我们会以理论与实践相结合的方式来进行本章的学习，希望广大程序爱好者，学好设计模式，做一个优秀的软件工程师！
+
+企业级项目实战(带源码)地址：http://zz563143188.iteye.com/blog/1825168
+23种模式java实现源码下载地址 http://pan.baidu.com/share/link?shareid=372668&uk=4076915866#dir/path=%2F%E5%AD%A6%E4%B9%A0%E6%96%87%E4%BB%B6 
+
+一、设计模式的分类
+
+总体来说设计模式分为三大类：
+
+创建型模式，共五种：工厂方法模式、抽象工厂模式、单例模式、建造者模式、原型模式。
+
+结构型模式，共七种：适配器模式、装饰器模式、代理模式、外观模式、桥接模式、组合模式、享元模式。
+
+行为型模式，共十一种：策略模式、模板方法模式、观察者模式、迭代子模式、责任链模式、命令模式、备忘录模式、状态模式、访问者模式、中介者模式、解释器模式。
+
+其实还有两类：并发型模式和线程池模式。用一个图片来整体描述一下：
+
+
+private static String CONFIG_FILE = Thread
+    		.currentThread()
+    		.getContextClassLoader()
+    		.getResource("redis.properties")
+    		.getPath();
